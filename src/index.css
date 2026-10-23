@@ -68,9 +68,11 @@ a { color: var(--pumpkin-2); }
 .brand-logo { height: 48px; width: auto; background: rgba(18,10,28,0.9); border: 1px solid rgba(255,255,255,0.18); border-radius: 10px; padding: 3px 6px; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .x { color: var(--pumpkin); }
+.header-links { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
 .badge {
   font-size: 0.8rem; padding: 0.35rem 0.8rem; border-radius: 999px;
   border: 1px solid var(--pumpkin); color: var(--pumpkin-2); background: rgba(255, 122, 26, 0.08);
+  text-decoration: none;
 }
 
 .main { max-width: 860px; margin: 0 auto; padding: 1.5rem 16px 4rem; }
@@ -276,3 +278,40 @@ a.btn { text-decoration: none; display: inline-flex; align-items: center; justif
 .pill.completed { border-color: var(--slime); color: var(--slime); }
 .pill.failed { border-color: var(--blood); color: #ff9fb0; }
 .pill.running { border-color: var(--pumpkin); color: var(--pumpkin-2); }
+
+/* ── Raise Your Own Haunt ──────────────────────── */
+.lab-kicker { letter-spacing: 0.14em; text-transform: uppercase; color: var(--pumpkin-2); font-size: 0.75rem; margin: 0.5rem 0; }
+.lab-title { font-family: 'Creepster', 'Space Grotesk', cursive; font-weight: 400; font-size: clamp(2.4rem, 6vw, 3.6rem); margin: 0; }
+.lab-lead { color: var(--muted); max-width: 68ch; }
+.lab-nav { list-style: none; display: flex; gap: 0.4rem; padding: 0; margin: 1rem 0 1.25rem; overflow-x: auto; }
+.lab-nav button {
+  display: flex; align-items: center; gap: 0.4rem; white-space: nowrap;
+  background: transparent; color: var(--muted); border: 1px solid var(--line); border-radius: 999px;
+  padding: 0.35rem 0.7rem 0.35rem 0.35rem; font: inherit; cursor: pointer;
+}
+.lab-nav button span {
+  width: 1.4rem; height: 1.4rem; border-radius: 50%; display: grid; place-items: center;
+  background: #241433; color: var(--text); font-size: 0.75rem;
+}
+.lab-nav button.on { color: var(--text); border-color: var(--pumpkin); }
+.lab-nav button.on span { background: var(--pumpkin); color: #1a0b00; }
+.lab-step table { width: 100%; border-collapse: collapse; margin: 0.75rem 0 1rem; font-size: 0.92rem; }
+.lab-step th, .lab-step td { text-align: left; padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+.lab-step th { color: var(--pumpkin-2); font-weight: 600; }
+.concept {
+  border-left: 3px solid var(--pumpkin); background: rgba(255, 122, 26, 0.08);
+  padding: 0.7rem 0.9rem; border-radius: 0 12px 12px 0; margin: 0.9rem 0;
+}
+.arch { width: 100%; height: auto; margin: 0.5rem 0 1rem; }
+.tech { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin: 0.5rem 0 1rem; }
+.tech-chip { border: 1px solid var(--line); border-radius: 999px; padding: 0.35rem 0.75rem; color: var(--text); background: rgba(255,255,255,0.04); }
+.lab-codehead { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; margin-top: 0.5rem; }
+.lab-code {
+  white-space: pre-wrap; background: #09060e; border: 1px solid var(--line); border-radius: 12px;
+  padding: 0.9rem 1rem; overflow: auto; max-height: 28rem; font-size: 0.82rem; line-height: 1.45;
+}
+.lab-list { display: grid; gap: 0.7rem; padding-left: 1.2rem; }
+.lab-pager { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 1rem; color: var(--muted); }
+.lab-done { text-align: center; }
+.lab-done ul { text-align: left; max-width: 46rem; margin: 1rem auto; }
+.lab-burst { font-size: 4rem; margin: 0; }

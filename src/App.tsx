@@ -113,7 +113,12 @@ export default function App() {
           ))}
           <span className="sr-only">{EVENT.name}</span>
         </div>
-        <span className="badge">{EVENT.edition}</span>
+        <span className="header-links">
+          <a className="badge" href="/build">
+            Raise your own haunt
+          </a>
+          <span className="badge">{EVENT.edition}</span>
+        </span>
       </header>
 
       <main className="main">
@@ -293,7 +298,7 @@ export default function App() {
 
       <footer className="footer">
         Built with Gemini CLI at AI DevCamp × GDG London · Inspired by the Formula E GenMedia codelab ·{' '}
-        <a href="/admin">Admin</a>
+        <a href="/build">Raise your own haunt</a> · <a href="/admin">Admin</a>
       </footer>
     </div>
   );

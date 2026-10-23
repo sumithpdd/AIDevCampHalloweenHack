@@ -26,12 +26,12 @@ Look carefully at the attached photo. It may show one person or a group. Write a
   Video action: ${scene.motion}
 
 Rules:
-- Count the people. Every clearly visible person must appear in the portrait and the video. Do not merge faces, do not drop anyone, and do not invent extra people.
-- If it is a group, keep them together in one frame, in the same left-to-right arrangement as the photo.
-- Preserve each person's identity: face shape, skin tone, hairstyle, facial hair, glasses and expression must stay recognisable.
+- This is an edit of the attached photo, not a new generation. One person or a group: keep the same people, the same count, and the same left-to-right order.
+- Identity lock: do not change face shape, eyes, nose, mouth, ears, jaw, skin tone, skin texture, age, hairstyle, facial hair, glasses, expression, or body shape. No face paint that covers features, no new skin colour, no cartoon, no beauty filter.
+- Change only clothing, small props, background, and lighting. Costume never overrides a face.
 - Spooky but family-friendly: no gore, no blood dripping, no weapons pointed at camera.
-- avatarPrompt: 80-160 words, one cinematic shot of the whole group (or the single person), describe each person, lighting, lens, wardrobe, makeup, background and colour palette.
-- videoPrompt: 50-100 words, one continuous 8-second shot of everyone together: camera movement, what each person does, atmosphere and ambient sound (wind, bats, organ music…).
+- avatarPrompt: 60-120 words. Describe wardrobe, props, lighting, and background. State that every face must match the photo. Do not describe a new face.
+- videoPrompt: 40-80 words. Camera, cloth, and background may move. Faces must not morph. Everyone who is in the photo stays in frame.
 - ghoulName: playful, max 6 words, may reference London. For a group, name the group, not just one person.
 - personDescription: one neutral sentence about the visible people (a single person or the group). No guesses about age, ethnicity or other sensitive traits.`;
 }

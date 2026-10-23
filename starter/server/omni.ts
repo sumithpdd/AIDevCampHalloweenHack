@@ -42,9 +42,10 @@ const FAILED = new Set(['failed', 'cancelled', 'incomplete', 'budget_exceeded'])
 /** Builds the final text instruction sent to Omni together with the avatar. */
 export function buildVideoInstruction(prompt: string): string {
   return (
-    `Animate everyone in the attached image into one continuous 8-second cinematic Halloween shot. ` +
-    `Keep each face and costume consistent with the image. If it is a group, keep the whole group together and do not drop anyone. ${prompt} ` +
-    `Spooky, atmospheric, family-friendly. No on-screen text.`
+    `Animate the attached portrait. Do not redesign anyone. ` +
+    `One person or a group: keep every person, their faces, bodies, clothing, and arrangement exactly as in the image. ` +
+    `Motion comes from the camera, cloth, and background. Faces must not morph, and nobody may appear or disappear. ${prompt} ` +
+    `Family-friendly. No on-screen text.`
   );
 }
 

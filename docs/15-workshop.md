@@ -2,6 +2,7 @@
 
 > 🧭 **This is the path for the room.** About 2 hours.
 > The React kiosk in this repo is the reference and the event booth. You build a **light** version at the end, with Claude, Gemini, or Antigravity.
+> The same path, as a codelab with a diagram, is [Raise Your Own Haunt](16-raise-your-own-haunt.md) and on the booth at `/build`.
 
 Do not open `src/App.tsx` until [Step 7](#step-7--build-the-light-app). The first six steps are the ideas. The last step is the product.
 
