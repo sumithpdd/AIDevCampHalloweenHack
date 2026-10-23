@@ -89,7 +89,10 @@ FIREBASE_STORAGE_BUCKET=haunted-kiosk-xyz.firebasestorage.app
 ## 2.7 Gemini API key for Gemini Omni (server only)
 1. Open [Google AI Studio → API keys](https://aistudio.google.com/apikey) → **Create API key** → choose your Firebase
    project's Google Cloud project.
-2. Make sure billing is enabled on it (Omni video generation is a paid feature).
+2. Turn on billing for that key's project, then buy **Prepay credits** in AI Studio
+   ([billing guide](https://ai.google.dev/gemini-api/docs/billing#prepay)). The Firebase **Blaze** plan pays for
+   Storage. It does not pay for Gemini. When the Prepay balance hits $0, the brief stage returns
+   `429 Your prepayment credits are depleted`. The minimum purchase is $5.
 3. Add to `.env.local` — **no `VITE_` prefix**, so it never reaches the browser:
 
 ```dotenv

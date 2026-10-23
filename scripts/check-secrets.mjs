@@ -31,6 +31,7 @@ const FORBIDDEN_NAMES = [/(^|\/)\.env(\.[^/]*)?$/, /service.?account.*\.json$/i,
 const ALLOWED_NAMES = [/(^|\/)\.env\.example$/];
 const PATTERNS = [
   ['Google API key', /AIza[0-9A-Za-z_-]{35}/],
+  ['AI Studio API key', /AQ\.[0-9A-Za-z_-]{20,}/],
   ['Private key block', /-----BEGIN [A-Z ]*PRIVATE KEY-----/],
   ['Service account JSON', /"type"\s*:\s*"service_account"/],
   ['OAuth client secret', /GOCSPX-[0-9A-Za-z_-]{20,}/],

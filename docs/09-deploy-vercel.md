@@ -63,10 +63,11 @@ git push -u origin main
 npm i -g vercel
 vercel login
 vercel link                            # pick your team + project
-vercel env add GEMINI_API_KEY production
-vercel env add FIREBASE_SERVICE_ACCOUNT_BASE64 production
-vercel env add VITE_RECAPTCHA_ENTERPRISE_SITE_KEY production
-# … one per key in .env.local (skip VITE_APPCHECK_DEBUG_TOKEN)
+# Pipe each value. Skip VITE_APPCHECK_DEBUG_TOKEN — production builds ignore it, and it must not be uploaded.
+# Set DEPLOY_WITH_SOLUTIONS=true only on the live demo. A participant fork leaves it unset.
+vercel env add GEMINI_API_KEY production --value "..." --yes --force
+vercel env add FIREBASE_SERVICE_ACCOUNT_BASE64 production --value "..." --yes --force
+vercel env add DEPLOY_WITH_SOLUTIONS production --value "true" --yes --force
 vercel --prod
 ```
 
