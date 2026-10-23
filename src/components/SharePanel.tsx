@@ -12,6 +12,7 @@ export function SharePanel({
   imageUrl,
   videoBlob,
   videoUrl,
+  pageUrl,
   orientation,
 }: {
   caption: string;
@@ -22,11 +23,13 @@ export function SharePanel({
   imageUrl?: string;
   videoBlob?: Blob;
   videoUrl?: string;
+  /** Public page for this run: photo used, portrait, and video. */
+  pageUrl?: string;
   orientation: Orientation;
 }) {
   const [copied, setCopied] = useState(false);
   const [shareMsg, setShareMsg] = useState('');
-  const links = shareLinks(caption, videoUrl ?? imageUrl);
+  const links = shareLinks(caption, pageUrl ?? videoUrl ?? imageUrl);
   const ext = videoBlob?.type.includes('mp4') ? 'mp4' : 'webm';
 
   const copy = async () => {
@@ -59,7 +62,7 @@ export function SharePanel({
         <button
           className="btn"
           onClick={async () => {
-            const ok = await nativeShare({ caption, imageBlob, videoBlob, imageUrl, videoUrl });
+            const ok = await nativeShare({ caption, imageBlob, videoBlob, imageUrl, videoUrl: pageUrl ?? videoUrl });
             setShareMsg(ok ? '' : 'Sharing isn’t supported here — use the links below.');
           }}
         >

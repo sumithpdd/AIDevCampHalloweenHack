@@ -6,6 +6,7 @@ import { ScenePicker } from './components/ScenePicker';
 import { DetailsForm } from './components/DetailsForm';
 import { SharePanel } from './components/SharePanel';
 import { PickupCard } from './components/PickupCard';
+import { pickupUrl } from './lib/pickup';
 import { SavedPosts } from './components/SavedPosts';
 import { TokenSummary } from './components/TokenSummary';
 import { SCENES, type Scene } from './lib/scenes';
@@ -199,10 +200,6 @@ export default function App() {
 
               <Progress state={pipeline} />
 
-              {pipeline.code && !deleted && (
-                <PickupCard code={pipeline.code} photoUrl={pipeline.brandedImageUrl} videoUrl={showVideo} />
-              )}
-
               {pipeline.error && (
                 <div className="alert">
                   <p>{pipeline.error}</p>
@@ -243,6 +240,10 @@ export default function App() {
 
               <TokenSummary usage={pipeline.usage} />
 
+              {pipeline.code && !deleted && (
+                <PickupCard code={pipeline.code} photoUrl={pipeline.brandedImageUrl} videoUrl={showVideo} />
+              )}
+
               {!deleted && (pipeline.brandedImageUrl || pipeline.caption) && (
                 <SharePanel
                   caption={pipeline.caption ?? ''}
@@ -253,6 +254,7 @@ export default function App() {
                   imageUrl={pipeline.brandedImageUrl}
                   videoBlob={pipeline.brandedVideoBlob}
                   videoUrl={showVideo}
+                  pageUrl={pipeline.code ? pickupUrl(pipeline.code) : undefined}
                   orientation={orientation}
                 />
               )}

@@ -38,6 +38,8 @@ export interface PipelineState {
   avatarDataUrl?: string;
   brandedImageBlob?: Blob;
   brandedImageUrl?: string;
+  /** Download URL of the photograph the guest uploaded. */
+  sourceUrl?: string;
   videoUrl?: string;
   brandedVideoBlob?: Blob;
   brandedVideoUrl?: string;
@@ -98,18 +100,28 @@ export async function runPipeline(
     ...patch,
   });
   const saveMeta = (patch: Partial<JobMeta>) => (uid ? writeJobMeta(uid, meta(patch)).catch(() => undefined) : undefined);
-  const publishTicket = (photoUrl?: string, videoUrl?: string, ghoulName?: string) =>
-    writePickupTicket({
-      code,
-      ghoulName,
-      sceneTitle: scene.title,
-      photoUrl,
-      videoUrl,
-      updatedAt: new Date().toISOString(),
-    }).catch(() => undefined);
-
   let brief: GhoulBrief | undefined;
   let caption: string | undefined;
+  let sourceUrl: string | undefined;
+  let portraitUrl: string | undefined;
+  let readyVideoUrl: string | undefined;
+  const publishTicket = (patch: { sourceUrl?: string; portraitUrl?: string; videoUrl?: string; ghoulName?: string } = {}) => {
+    if (patch.sourceUrl) sourceUrl = patch.sourceUrl;
+    if (patch.portraitUrl) portraitUrl = patch.portraitUrl;
+    if (patch.videoUrl) readyVideoUrl = patch.videoUrl;
+    return writePickupTicket({
+      code,
+      ghoulName: patch.ghoulName ?? brief?.ghoulName,
+      sceneTitle: scene.title,
+      caption,
+      sourceUrl,
+      portraitUrl,
+      photoUrl: portraitUrl,
+      videoUrl: readyVideoUrl,
+      updatedAt: new Date().toISOString(),
+    }).catch(() => undefined);
+  };
+
   update((s) => ({ ...s, jobId, code }));
 
   try {
@@ -120,7 +132,9 @@ export async function runPipeline(
     update((s) => ({ ...s, jobId, uid, code }));
     void saveMeta({});
     const small = await downscaleImage(photo);
-    await uploadToStorage(ghoulPath(uid, jobId, 'selfie.jpg'), small);
+    const uploadedSourceUrl = await uploadToStorage(ghoulPath(uid, jobId, 'selfie.jpg'), small);
+    update((s) => ({ ...s, sourceUrl: uploadedSourceUrl }));
+    void publishTicket({ sourceUrl: uploadedSourceUrl });
     const selfie = await blobToInlineImage(small);
     set('upload', 'done', `ghouls/${uid.slice(0, 6)}…/${jobId.slice(0, 8)}/selfie.jpg`);
 
@@ -158,7 +172,7 @@ export async function runPipeline(
     update((s) => ({ ...s, brandedImageBlob, brandedImageUrl }));
     set('avatar', 'done', 'Saved avatar.png + avatar-branded.jpg');
     void saveMeta({ ghoulName: brief.ghoulName });
-    void publishTicket(brandedImageUrl, undefined, brief.ghoulName);
+    void publishTicket({ portraitUrl: brandedImageUrl, ghoulName: brief.ghoulName });
 
     // ── Challenge 4: Gemini Omni video (Vercel Function) ─────────────────
     set('video', 'running', 'Waking Gemini Omni in the crypt…');
@@ -189,7 +203,7 @@ export async function runPipeline(
 
     await captionTask;
     await saveMeta({ status: 'completed', ghoulName: brief.ghoulName, caption });
-    await publishTicket(brandedImageUrl, shareVideoUrl, brief.ghoulName);
+    await publishTicket({ portraitUrl: brandedImageUrl, videoUrl: shareVideoUrl, ghoulName: brief.ghoulName });
   } catch (err) {
     const e = err as Error & { challenge?: number };
     const todoMatch = /Challenge (\d) is still a TODO/.exec(e.message);

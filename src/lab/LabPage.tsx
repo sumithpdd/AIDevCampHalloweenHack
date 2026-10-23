@@ -51,7 +51,7 @@ export function LabPage() {
 
         <div className="lab-shell">
           <aside className="lab-side" aria-label="Lab steps">
-            <p className="lab-side-kicker">The blood path</p>
+            <p className="lab-side-kicker">The witching trail</p>
             <ol className="lab-nav">
               {STEPS.map((item, i) => (
                 <li key={item.id}>

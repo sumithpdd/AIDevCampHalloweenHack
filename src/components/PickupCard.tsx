@@ -14,7 +14,7 @@ export function PickupCard({
   const page = pickupUrl(code);
   return (
     <section className="pickup">
-      <p className="muted">Give this code to the desk, or scan to open the photo and the video.</p>
+      <p className="muted">This code finds the photo you used, the portrait, and the video. Search it on the admin screen to share or delete the set.</p>
       <p className="pickup-code">{code}</p>
       <div className="pickup-qrs">
         <QrImage value={page} caption="Photo and video" />

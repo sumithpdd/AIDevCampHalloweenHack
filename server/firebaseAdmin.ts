@@ -1,4 +1,5 @@
-import { createVerify, randomUUID } from 'node:crypto';
+import { createVerify, randomBytes, randomUUID } from 'node:crypto';
+import type { File } from '@google-cloud/storage';
 import { cert, getApp, getApps, initializeApp, type App } from 'firebase-admin/app';
 import { getStorage } from 'firebase-admin/storage';
 import { HttpError } from './http.js';
@@ -173,6 +174,10 @@ export async function listAllJobs(limit = 200): Promise<AdminJob[]> {
           meta = undefined;
         }
       }
+      const selfieFile = pick(job, ['selfie.jpg']);
+      const avatarFile = pick(job, ['avatar-branded.jpg', 'avatar.png']);
+      const videoFile = pick(job, ['video-branded.mp4', 'video-branded.webm', 'video.mp4']);
+      meta = await ensurePickupCode(job.uid, job.jobId, meta, { selfieFile, avatarFile, videoFile });
       const [avatar, video, selfie] = await Promise.all([
         signed(['avatar-branded.jpg', 'avatar.png']),
         signed(['video-branded.mp4', 'video-branded.webm', 'video.mp4']),
@@ -183,6 +188,57 @@ export async function listAllJobs(limit = 200): Promise<AdminJob[]> {
       return { ...rest, meta, urls: { avatar, video, selfie } };
     }),
   );
+}
+
+const PICKUP_ALPHABET = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+
+function makePickupCode(): string {
+  return [...randomBytes(6)].map((b) => PICKUP_ALPHABET[b % PICKUP_ALPHABET.length]).join('');
+}
+
+async function stableDownloadUrl(file: File): Promise<string> {
+  const existing = String(file.metadata.metadata?.firebaseStorageDownloadTokens ?? '').split(',')[0];
+  const token = existing || randomUUID();
+  if (!existing) await file.setMetadata({ metadata: { firebaseStorageDownloadTokens: token } });
+  return `https://firebasestorage.googleapis.com/v0/b/${file.bucket.name}/o/${encodeURIComponent(file.name)}?alt=media&token=${token}`;
+}
+
+/** Gives a finished run a code and a public card with the photo used, the portrait, and the video. */
+async function ensurePickupCode(
+  uid: string,
+  jobId: string,
+  meta: Record<string, unknown> | undefined,
+  files: { selfieFile?: File; avatarFile?: File; videoFile?: File },
+): Promise<Record<string, unknown> | undefined> {
+  if (!files.avatarFile && !files.videoFile) return meta;
+  const current = typeof meta?.code === 'string' ? meta.code : '';
+  const valid = /^[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{6}$/.test(current);
+  if (valid && meta?.ticketComplete === true) return meta;
+  try {
+    const code = valid ? current : makePickupCode();
+    const [sourceUrl, portraitUrl, videoUrl] = await Promise.all([
+      files.selfieFile ? stableDownloadUrl(files.selfieFile) : undefined,
+      files.avatarFile ? stableDownloadUrl(files.avatarFile) : undefined,
+      files.videoFile ? stableDownloadUrl(files.videoFile) : undefined,
+    ]);
+    const ticket = {
+      code,
+      ghoulName: meta?.ghoulName,
+      sceneTitle: meta?.sceneTitle,
+      caption: typeof meta?.caption === 'string' ? meta.caption : undefined,
+      sourceUrl,
+      portraitUrl,
+      photoUrl: portraitUrl,
+      videoUrl,
+      updatedAt: new Date().toISOString(),
+    };
+    await bucket().file(`codes/${code}.json`).save(JSON.stringify(ticket), { contentType: 'application/json' });
+    const next = { ...(meta ?? {}), code, ticketComplete: true, updatedAt: ticket.updatedAt };
+    await bucket().file(`ghouls/${uid}/${jobId}/meta.json`).save(JSON.stringify(next), { contentType: 'application/json' });
+    return next;
+  } catch {
+    return meta;
+  }
 }
 
 /** Deletes every file of one job. */

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { EVENT } from '../lib/branding';
+import { shareLinks } from '../lib/share';
 import { fmt } from '../lib/usage';
 
 interface AdminJob {
@@ -194,20 +195,14 @@ export function AdminPage() {
             <div className="admin-grid">
               {shown.map((j) => (
                 <article key={`${j.uid}/${j.jobId}`} className="admin-card">
-                  <div className="admin-media">
-                    {j.urls.video ? (
-                      <video src={j.urls.video} poster={j.urls.avatar} controls preload="none" playsInline />
-                    ) : j.urls.avatar ? (
-                      <img src={j.urls.avatar} alt="" loading="lazy" />
-                    ) : j.urls.selfie ? (
-                      <img src={j.urls.selfie} alt="" loading="lazy" className="dim" />
-                    ) : (
-                      <div className="admin-empty">no media</div>
-                    )}
+                  <div className="admin-thumbs">
+                    <Thumb label="Photo used" src={j.urls.selfie} />
+                    <Thumb label="Portrait" src={j.urls.avatar} />
+                    <Thumb label="Video" src={j.urls.video} video />
                   </div>
                   <div className="admin-body">
                     <div className="admin-name">{j.meta?.ghoulName ?? 'Unnamed ghoul'}</div>
-                    {j.meta?.code && <div className="pickup-code small">{j.meta.code}</div>}
+                    <div className="pickup-code small">{j.meta?.code ?? 'No code yet'}</div>
                     <div className="muted small">
                       {j.meta?.sceneTitle ?? '—'} {j.meta?.firstName ? `· ${j.meta.firstName}` : ''}
                     </div>
@@ -230,26 +225,12 @@ export function AdminPage() {
                     ) : null}
                     {j.meta?.caption && <p className="admin-caption">{j.meta.caption}</p>}
                     {j.meta?.error && <p className="error-text small">{j.meta.error}</p>}
-                    <div className="row">
-                      {j.meta?.code && (
-                        <a className="btn small ghost" href={`/r/${j.meta.code}`} target="_blank" rel="noreferrer">
-                          Pickup
-                        </a>
-                      )}
-                      {j.urls.avatar && (
-                        <a className="btn small ghost" href={j.urls.avatar} target="_blank" rel="noreferrer">
-                          Photo
-                        </a>
-                      )}
-                      {j.urls.video && (
-                        <a className="btn small ghost" href={j.urls.video} target="_blank" rel="noreferrer">
-                          Video
-                        </a>
-                      )}
-                      <button className="btn small ghost danger" onClick={() => void remove(j)}>
-                        🗑️ Delete
-                      </button>
-                    </div>
+                    <CreationActions
+                      code={j.meta?.code}
+                      caption={j.meta?.caption}
+                      name={j.meta?.ghoulName}
+                      onDelete={() => void remove(j)}
+                    />
                   </div>
                 </article>
               ))}
@@ -257,6 +238,74 @@ export function AdminPage() {
           </>
         )}
       </main>
+    </div>
+  );
+}
+
+function Thumb({ label, src, video }: { label: string; src?: string; video?: boolean }) {
+  return (
+    <figure>
+      {src && video && <video src={src} controls preload="none" playsInline />}
+      {src && !video && <img src={src} alt="" loading="lazy" />}
+      {!src && <div className="admin-empty">—</div>}
+      <figcaption>{label}</figcaption>
+    </figure>
+  );
+}
+
+function CreationActions({
+  code,
+  caption,
+  name,
+  onDelete,
+}: {
+  code?: string;
+  caption?: string;
+  name?: string;
+  onDelete: () => void;
+}) {
+  const [copied, setCopied] = useState<'code' | 'link' | ''>('');
+  const page = code ? `${window.location.origin}/r/${code}` : '';
+  const blurb = caption || [name, code].filter(Boolean).join(' · ');
+  const links = page ? shareLinks(blurb, page) : null;
+
+  const copy = async (value: string, which: 'code' | 'link') => {
+    await navigator.clipboard.writeText(value);
+    setCopied(which);
+    window.setTimeout(() => setCopied(''), 1200);
+  };
+
+  return (
+    <div className="admin-share">
+      {code && (
+        <>
+          <button type="button" className="btn small ghost" onClick={() => void copy(code, 'code')}>
+            {copied === 'code' ? 'Copied' : 'Copy code'}
+          </button>
+          <button type="button" className="btn small ghost" onClick={() => void copy(page, 'link')}>
+            {copied === 'link' ? 'Copied' : 'Copy link'}
+          </button>
+          <a className="btn small ghost" href={`/r/${code}`} target="_blank" rel="noreferrer">
+            Open
+          </a>
+          {links && (
+            <>
+              <a className="btn small ghost" href={links.whatsapp} target="_blank" rel="noreferrer">
+                WhatsApp
+              </a>
+              <a className="btn small ghost" href={links.x} target="_blank" rel="noreferrer">
+                X
+              </a>
+              <a className="btn small ghost" href={links.linkedin} target="_blank" rel="noreferrer">
+                LinkedIn
+              </a>
+            </>
+          )}
+        </>
+      )}
+      <button type="button" className="btn small ghost danger" onClick={onDelete}>
+        Delete
+      </button>
     </div>
   );
 }

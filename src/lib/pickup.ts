@@ -14,11 +14,16 @@ export function pickupUrl(code: string): string {
   return `${window.location.origin}/r/${code}`;
 }
 
-/** Public card stored at codes/{code}.json. Download URLs are the photo and the video. */
+/** Public card stored at codes/{code}.json. One code finds the photo used, the portrait, and the video. */
 export interface PickupTicket {
   code: string;
   ghoulName?: string;
   sceneTitle?: string;
+  caption?: string;
+  /** The photograph the guest uploaded. */
+  sourceUrl?: string;
+  /** The portrait Nano Banana made. photoUrl is the same field, kept for older cards. */
+  portraitUrl?: string;
   photoUrl?: string;
   videoUrl?: string;
   updatedAt: string;
