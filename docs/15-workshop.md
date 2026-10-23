@@ -4,7 +4,7 @@
 > The React kiosk in this repo is the reference and the event booth. You build a **light** version at the end, with Claude, Gemini, or Antigravity.
 > The same path, as a codelab with a diagram, is [Raise Your Own Haunt](16-raise-your-own-haunt.md) and on the booth at `/build`.
 
-Do not open `src/App.tsx` until [Step 7](#step-7--build-the-light-app). The first six steps are the ideas. The last step is the product.
+Follow **[Raise Your Own Haunt](16-raise-your-own-haunt.md)** on the booth at `/build`, steps 0–13. You set up Firebase, then prove each challenge on its own, and only then put them behind one Generate button. The sections below are the ideas inside those steps.
 
 ## What "light" means
 
@@ -40,7 +40,7 @@ A scene is three short strings:
 
 | Field | Example |
 |---|---|
-| **costume** | elegant Victorian vampire, high collar, subtle fangs |
+| **costume** | high-collared cape and evening clothes. Natural skin. The face stays |
 | **setting** | Tower Bridge at midnight, fog, red moon |
 | **motion** | slow push-in, cape billows, bats burst from the fog |
 
@@ -53,7 +53,9 @@ A text model looks at the **photo** and those three strings and writes a **brief
 | `avatarPrompt` | The image model |
 | `videoPrompt` | The video model |
 
-**Checkpoint.** On paper or in the assistant chat, write one scene (costume, setting, motion) for a theme you care about. Do not write React.
+A photo may be one person or a group. The brief must keep every clearly visible person, in the same order, and must not ask for a new face.
+
+**Checkpoint.** On paper or in the assistant chat, write one scene (costume, setting, motion) for a theme you care about. Costume is clothing. Do not write React.
 
 ---
 
@@ -110,7 +112,7 @@ The reference call, if you want to read it later, is [Challenge 2](05-challenge-
 
 Model: `gemini-3.1-flash-image` (Nano Banana 2). Ask for an image back (`responseModalities` includes image) and set the frame (`9:16` or `16:9`).
 
-**Checkpoint.** One sentence you will require in the portrait prompt: the person's face stays recognisable, no text, no watermark.
+**Checkpoint.** One rule you will require in the portrait prompt: edit the attached photo, keep every person, do not change facial features, no text, no watermark.
 
 Reference: [Challenge 3](06-challenge-3-nano-banana-avatar.md).
 
@@ -141,30 +143,27 @@ Now you write software. Create an empty folder (not this repo):
 my-light-kiosk/
 ```
 
-Open it in Claude, Gemini, or Antigravity and paste the brief below. Attach your scene from Step 1. Do not attach `.env.local`.
+Open it in Cursor, VS Code, Claude, Gemini, or Antigravity and paste the brief below. Choose Vite + React, or Next.js on Vercel. Attach your scene from Step 1. Do not attach `.env.local`. The same brief is on the booth at `/build` (step 11, Copy prompt). Do the Firebase and challenge steps on that page before you paste it.
 
 ### Brief to paste
 
 ```text
-Build a light single-page photo booth. Stack: Vite + React + Firebase AI Logic + one server route for video (Vite middleware in dev is enough; Vercel functions are fine if you know them).
+Build a light photo booth I can deploy on Vercel. I will choose the stack: Vite + React, or Next.js. Use Firebase for auth and storage, Firebase AI Logic in the browser, and one server route for video.
+
+The photo may be one person or a group. Edit that photo. Do not invent new people.
 
 Pipeline, in this order:
 1. Anonymous Firebase sign-in.
-2. Upload the selfie to Firebase Storage at ghouls/{uid}/{jobId}/selfie.jpg (images only).
-3. gemini-3.8-flash via Firebase AI Logic. Input: my scene (costume, setting, motion) plus the selfie bytes. Structured JSON only: ghoulName, personDescription, avatarPrompt, videoPrompt. Temperature 0.2, thinking high. Keep the face recognisable and the result family-friendly.
-4. gemini-3.1-flash-image via Firebase AI Logic. Input: avatarPrompt + the same selfie bytes. Return a portrait, 9:16.
-5. Upload the portrait to ghouls/{uid}/{jobId}/avatar.png.
-6. A server route starts Gemini Omni (gemini-omni-1.1-flash) with background:true using GEMINI_API_KEY (no VITE_ prefix). The page polls every 5s. When the mp4 is ready, save it to Storage and play it.
+2. Upload the photo to Firebase Storage at ghouls/{uid}/{jobId}/selfie.jpg (images only, under 10 MB).
+3. gemini-3.8-flash via Firebase AI Logic. Input: my scene (costume, setting, motion) plus the photo bytes. Structured JSON only: ghoulName, personDescription, avatarPrompt, videoPrompt. Temperature 0.2, thinking high.
+4. Identity lock in the brief and the portrait: same people, same count, same order. Do not change face shape, eyes, nose, mouth, skin tone, hair, glasses, or expression. Change only clothing, small props, background, and lighting.
+5. gemini-3.1-flash-image (Nano Banana 2) via Firebase AI Logic. Input: avatarPrompt plus the same photo bytes. Return an image, 9:16 or 16:9.
+6. Upload that portrait to ghouls/{uid}/{jobId}/avatar.png.
+7. A server route starts Gemini Omni (gemini-omni-1.1-flash) with background: true using GEMINI_API_KEY (no VITE_ prefix). The page polls every 5 seconds. When the mp4 is ready, save it with the Admin SDK and play it. Faces in the video must not morph.
 
-UI: one page. File or camera input, three scene buttons, one Generate button, four status lines (upload, brief, portrait, video), the name, the portrait, the video. No admin, no watermarks, no printing, no social share, no caption generator.
+UI: one page. File or camera input, three scene buttons, one Generate button, status lines for upload, brief, portrait, and video, then the name, the portrait, and the video. No admin page, no watermarks, no print, no share sheet.
 
-Read config from .env.local only:
-VITE_FIREBASE_API_KEY, VITE_FIREBASE_AUTH_DOMAIN, VITE_FIREBASE_PROJECT_ID,
-VITE_FIREBASE_STORAGE_BUCKET, VITE_FIREBASE_MESSAGING_SENDER_ID, VITE_FIREBASE_APP_ID,
-VITE_APPCHECK_DEBUG_TOKEN (dev only), GEMINI_API_KEY, FIREBASE_SERVICE_ACCOUNT_BASE64,
-FIREBASE_STORAGE_BUCKET.
-Initialize App Check in dev when VITE_APPCHECK_DEBUG_TOKEN is set.
-Never hard-code keys. Add .env.local and service-account JSON to .gitignore.
+Read config from .env.local only. Initialize App Check in dev when VITE_APPCHECK_DEBUG_TOKEN is set, and with reCAPTCHA Enterprise when VITE_RECAPTCHA_ENTERPRISE_SITE_KEY is set. Never hard-code keys. Gitignore .env.local and any service-account JSON.
 
 Scene to use:
 <paste costume, setting, motion>
@@ -172,7 +171,7 @@ Scene to use:
 
 ### Done when
 
-- A selfie of you produces a name, a portrait that still looks like you, and a playing video.
+- A photo of you, or of a group, produces a name, a portrait that still looks like those people, and a playing video.
 - The repo has no API key, no private key, and no debug token in source.
 - You can explain, without looking at the UI, why the video call is on the server and the brief call is not.
 

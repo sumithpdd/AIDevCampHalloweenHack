@@ -1,5 +1,7 @@
-import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { deleteObject, getBytes, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { storage } from './firebase';
+import type { PickupTicket } from './pickup';
+import { isPickupCode } from './pickup';
 import type { UsageReport } from './usage';
 
 /**
@@ -45,6 +47,8 @@ export interface JobMeta {
   totalTokens: number;
   status: 'running' | 'completed' | 'failed';
   error?: string;
+  /** Short code staff type into /admin, and guests scan as /r/{code}. */
+  code?: string;
 }
 
 export async function writeJobMeta(uid: string, meta: JobMeta): Promise<void> {
@@ -53,7 +57,30 @@ export async function writeJobMeta(uid: string, meta: JobMeta): Promise<void> {
 }
 
 /** "Delete my photos" — removes every file of one job (rules allow the owner to delete). */
-export async function deleteJob(uid: string, jobId: string): Promise<void> {
+export async function writePickupTicket(ticket: PickupTicket): Promise<void> {
+  if (!isPickupCode(ticket.code)) throw new Error('Invalid pickup code');
+  const blob = new Blob([JSON.stringify(ticket)], { type: 'application/json' });
+  await uploadBytes(ref(storage, `codes/${ticket.code}.json`), blob, { contentType: 'application/json' });
+}
+
+export async function readPickupTicket(code: string): Promise<PickupTicket | null> {
+  if (!isPickupCode(code)) return null;
+  try {
+    const bytes = await getBytes(ref(storage, `codes/${code}.json`));
+    return JSON.parse(new TextDecoder().decode(bytes)) as PickupTicket;
+  } catch {
+    return null;
+  }
+}
+
+export async function deletePickupTicket(code: string): Promise<void> {
+  if (!isPickupCode(code)) return;
+  await deleteObject(ref(storage, `codes/${code}.json`)).catch((e: { code?: string }) => {
+    if (e?.code !== 'storage/object-not-found') throw e;
+  });
+}
+
+export async function deleteJob(uid: string, jobId: string, code?: string): Promise<void> {
   await Promise.all(
     JOB_FILES.map((f) =>
       deleteObject(ref(storage, ghoulPath(uid, jobId, f))).catch((e: { code?: string }) => {
@@ -61,4 +88,5 @@ export async function deleteJob(uid: string, jobId: string): Promise<void> {
       }),
     ),
   );
+  if (code) await deletePickupTicket(code);
 }

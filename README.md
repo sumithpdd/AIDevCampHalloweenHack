@@ -1,18 +1,22 @@
 # 🎃 The Haunted Kiosk — a Gemini photo booth you can reskin
 
-Snap a selfie. A text model writes a production brief. An image model paints the portrait. A video model
-turns that portrait into an 8-second clip. Halloween is the sample theme. The pipeline is the thing you keep.
+Upload a photo of one person or a group. A text model writes a production brief. An image model edits
+that photo into a portrait. A video model turns the portrait into an 8-second clip. The people stay
+recognisable: clothes, props, and the room change, faces do not. Halloween is the sample theme. The
+pipeline is the thing you keep.
 
 This is a **React + Firebase + Vercel** version of Google's
 [Formula E GenMedia codelab](https://codelabs.developers.google.com/formula-e-genmedia-lab-codelab).
 The four challenges are the same. There is no Python, FastAPI, Docker, or Cloud Run.
 
-In the [workshop](docs/15-workshop.md) you learn those ideas first, then ask **Claude**, **Gemini**, or **Antigravity** to build a light one-page app. The React kiosk in this repository is the reference, and the full event booth.
+In the [workshop](docs/15-workshop.md) you learn those ideas first, then ask **Claude**, **Gemini**, or **Antigravity** to build a light one-page app. The same path is on the booth as **[Raise Your Own Haunt](docs/16-raise-your-own-haunt.md)** (`/build`). The React kiosk in this repository is the reference, and the full event booth.
+
+Live reference: [aidevcamp-halloween-hack.vercel.app](https://aidevcamp-halloween-hack.vercel.app) · [the lab](https://aidevcamp-halloween-hack.vercel.app/build)
 
 ```
  Browser (React + Vite)                                   Vercel Functions (/api, TypeScript)
  ┌──────────────────────────────────────────────┐        ┌───────────────────────────────────┐
- │ 📷 selfie ──► Firebase Storage (selfie.jpg)  │        │ POST /api/video/start             │
+ │ 📷 photo ───► Firebase Storage (selfie.jpg) │        │ POST /api/video/start             │
  │      │                                       │        │   verify Firebase ID token        │
  │      ▼  Firebase AI Logic                    │        │   read avatar.png from Storage    │
  │ Challenge 2: gemini-3.8-flash → JSON brief   │        │   Challenge 4a: Omni, background  │
@@ -38,19 +42,23 @@ On top of the four codelab challenges, the app is ready for a real event booth. 
 | 🔢 **Token count per generation** | Brief, avatar, caption and video. In / out / thinking / total, plus the grand total |
 | 🛡️ **Admin area** (`/admin`) | `ADMIN_SECRET` login → every ghoul with photo, video, caption and tokens. Delete any of them |
 | 🗑️ **Delete my photos** | Guests can wipe their own files from the result screen |
+| 👥 **One person or a group** | The same photo is edited. Every visible person stays, in the same order. Faces, skin, hair, and glasses stay |
+| 📖 **Raise Your Own Haunt** (`/build`) | In-app codelab: kit, Firebase, keys, then Challenges 1–4 one at a time, then one page |
 
 ## The ideas
 
 The [workshop](docs/15-workshop.md) teaches these ideas before any React. [docs/00-overview.md](docs/00-overview.md) is the same map, tied to this repo's files.
 
 **One photo, three jobs.** A scene is a short recipe: costume, place, and camera move (`src/data/booth-scenes.ts` pairs a backdrop from `backgrounds.ts` with a character from `prompts.ts`).
-Gemini 3.8 Flash looks at the face and expands that recipe into a name, an image prompt, and a video prompt.
-Nano Banana 2 (`gemini-3.1-flash-image`) paints the portrait. Gemini Omni animates the portrait. Each model
+Costume is clothing and props. It is not a new face.
+Gemini 3.8 Flash looks at everyone in the photo and expands that recipe into a name, an image prompt, and a video prompt.
+Nano Banana 2 (`gemini-3.1-flash-image`) edits the photo into the portrait. Gemini Omni animates that portrait. Each model
 does the job it is good at. The brief is the contract between them.
 
-**The selfie is pixels, not a caption.** Challenge 2 and Challenge 3 both receive the photo as image data.
-That is what keeps the face recognisable. The instruction in `src/lib/briefPrompt.ts` tells the text model
-which features to preserve, and to stay family-friendly.
+**The photo is pixels, not a caption.** Challenge 2 and Challenge 3 both receive the photo as image data.
+One person or a group: the same people, the same count, the same order. `src/lib/briefPrompt.ts` and the
+wrapper in `src/lib/avatar.ts` lock face shape, eyes, skin, hair, glasses, and expression. The video
+instruction in `server/omni.ts` says faces must not morph. Family-friendly stays.
 
 **Structured output.** The text model must return JSON with four fields (`ghoulName`, `personDescription`,
 `avatarPrompt`, `videoPrompt`). The next stages read those fields. They do not parse an essay.
@@ -99,8 +107,8 @@ npm run dev    # http://localhost:5173
 
 ## Workshop
 
-Follow [the workshop](docs/15-workshop.md). About 2 hours. **Concepts first. The React screen is the last step.**
-You build a light booth in an empty folder with **Claude**, **Gemini**, or **Antigravity**. This repo is the reference, not the starting file.
+Follow [the workshop](docs/15-workshop.md), or open **[Raise Your Own Haunt](docs/16-raise-your-own-haunt.md)** on the booth at `/build`. About 2 hours. **Set up each challenge before the page is assembled.**
+You build a light booth in an empty folder with **Claude**, **Gemini**, or **Antigravity** (Vite + React, or Next.js on Vercel). This repo is the reference, not the starting file.
 
 | Step | Doc | Time | Concept | You do not touch React yet |
 |---|---|---|---|---|
@@ -112,7 +120,7 @@ You build a light booth in an empty folder with **Claude**, **Gemini**, or **Ant
 | 6 | [Video](docs/15-workshop.md#step-6--video-is-a-job-not-a-request-15-min) | 15 min | Start the job, poll from the page. The Gemini key stays on the server. | Draw the two routes |
 | 7 | [Build the light app](docs/15-workshop.md#step-7--build-the-light-app) | 45–60 min | Same pipeline, one page, three scenes. | **Now** the assistant writes the UI |
 
-**Light** means selfie → brief → portrait → video. Logos, captions, print, share, and `/admin` stay in this repo. See the [advanced guide](docs/14-advanced-level.md) after your light app works.
+**Light** means photo → brief → portrait → video, including a group photo and the identity lock. Logos, captions, print, share, and `/admin` stay in this repo. See the [advanced guide](docs/14-advanced-level.md) after your light app works.
 
 ### Reference lab (optional)
 
@@ -130,13 +138,10 @@ Fill them by hand only if you want that exercise. Each AI stage stops with **"Ch
 | Ship | [Push & deploy](docs/09-deploy-vercel.md) | 5 · Deploying |
 | Done | [Clean-up](docs/12-cleanup.md) | 7 · Conclusion |
 
-`npm run solve -- 2` drops in the answer for Challenge 2 (`all` for every challenge). `npm run reset-challenges` puts the TODOs back.
+`npm run solve -- 2` drops in the answer for Challenge 2 (`all` for every challenge). `npm run reset-challenges` puts the TODOs back. In Gemini CLI: `/hack:hint 2`.
 
-**Also:** [Hack extensions](docs/10-hack-extensions.md) · [Make your own theme](docs/13-make-your-own.md) ·
+**Also:** [Raise Your Own Haunt](docs/16-raise-your-own-haunt.md) · [Hack extensions](docs/10-hack-extensions.md) · [Make your own theme](docs/13-make-your-own.md) ·
 [Troubleshooting](docs/11-troubleshooting.md)
-
-Stuck on a gap? `npm run solve -- 2` copies the answer for Challenge 2 (`all` for every challenge).
-`npm run reset-challenges` puts the TODOs back. In Gemini CLI: `/hack:hint 2`.
 
 ```bash
 git clone https://github.com/sumithpdd/AIDevCampHalloweenHack.git
@@ -146,7 +151,7 @@ cp .env.example .env.local        # PowerShell: Copy-Item .env.example .env.loca
 npm run dev                       # http://localhost:5173
 ```
 
-Fill `.env.local` from [Step 3](docs/02-firebase-setup.md) before the selfie upload will work.
+Fill `.env.local` from [Step 3](docs/02-firebase-setup.md) before the photo upload will work.
 
 ## Keys & secrets
 
@@ -191,6 +196,7 @@ src/lib/caption.ts        AI caption with event hashtags
 src/lib/usage.ts          Token counts per generation
 src/admin/, api/admin/    /admin: list + delete every ghoul
 src/lib/pipeline.ts       Stage order: upload → brief → portrait → video → logos (caption in parallel)
+src/lab/                 Raise Your Own Haunt (`/build`)
 src/App.tsx, components/  Kiosk UI
 starter/  solutions/      TODO files and reference answers
 scripts/                  solve / reset, secret scan, Vercel build

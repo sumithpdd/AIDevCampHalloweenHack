@@ -33,6 +33,18 @@ service firebase.storage {
       allow create, update: if isOwner() && (isImage() || isBrandedVideo() || isMeta());
     }
 
+    // Pickup card for one finished run. Anyone with the code can read the photo and video URLs.
+    // Only a signed-in guest can publish a card, and only under a 6-character code.
+    match /codes/{code} {
+      allow read: if true;
+      allow create, update: if request.auth != null
+        && code.matches('^[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{6}\\.json$')
+        && request.resource.contentType == 'application/json'
+        && request.resource.size < 8 * 1024;
+      allow delete: if request.auth != null
+        && code.matches('^[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{6}\\.json$');
+    }
+
     // Everything else is locked.
     match /{allPaths=**} {
       allow read, write: if false;

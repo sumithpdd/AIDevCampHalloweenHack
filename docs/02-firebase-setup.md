@@ -156,7 +156,7 @@ Skipped it? Everything still works. The "Add event logos" stage just says *Skipp
 page instead of burned into the file. Details: [Advanced level §2](14-advanced-level.md#2-logo-watermark-on-the-photo-and-the-video).
 
 ## 2.10 Admin password
-Add a long random `ADMIN_SECRET` to `.env.local` (server only, no `VITE_`) to turn on the `/admin` page:
+Add `ADMIN_SECRET` to `.env.local` (server only, no `VITE_`, at least 6 characters) to turn on the `/admin` page. A long random value is safer:
 
 ```bash
 node -e "console.log(require('crypto').randomBytes(24).toString('base64url'))"
@@ -166,8 +166,8 @@ node -e "console.log(require('crypto').randomBytes(24).toString('base64url'))"
 ```bash
 npm run dev
 ```
-Open http://localhost:5173 — the "Firebase isn't configured" banner should be gone. Snap a selfie and press
-**Summon my ghoul**: the *Upload selfie* stage should turn 🎃 and the next stage should stop with
+Open http://localhost:5173 — the "Firebase isn't configured" banner should be gone. Upload a photo and press
+**Summon my ghoul**: the *Upload photo* stage should turn 🎃 and the next stage should stop with
 **"Challenge 1 is still a TODO"**. Perfect — that's your next job.
 
 ---

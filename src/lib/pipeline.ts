@@ -2,7 +2,8 @@ import { ensureSignedIn } from './firebase';
 import { expandPrompt } from './promptExpansion';
 import { generateAvatar, type Orientation } from './avatar';
 import { blobToInlineImage, downscaleImage, inlineImageToBlob, toDataUrl } from './media';
-import { ghoulPath, uploadToStorage, writeJobMeta, type JobMeta } from './storage';
+import { makePickupCode } from './pickup';
+import { ghoulPath, uploadToStorage, writeJobMeta, writePickupTicket, type JobMeta } from './storage';
 import { startVideo, waitForVideo } from './video';
 import { brandImage, brandVideo, videoExtension } from './watermark';
 import { generateCaption } from './caption';
@@ -30,6 +31,8 @@ export interface GuestDetails {
 export interface PipelineState {
   jobId?: string;
   uid?: string;
+  /** Short code for /admin search and the guest QR. */
+  code?: string;
   stages: Record<StageId, { state: StageState; detail?: string }>;
   brief?: GhoulBrief;
   avatarDataUrl?: string;
@@ -77,10 +80,12 @@ export async function runPipeline(
   });
 
   const jobId = crypto.randomUUID();
+  const code = makePickupCode();
   const createdAt = new Date().toISOString();
   let uid = '';
   const meta = (patch: Partial<JobMeta>): JobMeta => ({
     jobId,
+    code,
     createdAt,
     updatedAt: new Date().toISOString(),
     sceneId: scene.id,
@@ -93,16 +98,27 @@ export async function runPipeline(
     ...patch,
   });
   const saveMeta = (patch: Partial<JobMeta>) => (uid ? writeJobMeta(uid, meta(patch)).catch(() => undefined) : undefined);
+  const publishTicket = (photoUrl?: string, videoUrl?: string, ghoulName?: string) =>
+    writePickupTicket({
+      code,
+      ghoulName,
+      sceneTitle: scene.title,
+      photoUrl,
+      videoUrl,
+      updatedAt: new Date().toISOString(),
+    }).catch(() => undefined);
 
   let brief: GhoulBrief | undefined;
   let caption: string | undefined;
+  update((s) => ({ ...s, jobId, code }));
 
   try {
     // ── Stage 0: sign in + upload the selfie to Firebase Storage ──────────
     set('upload', 'running', 'Summoning an anonymous Firebase user…');
     const user = await ensureSignedIn();
     uid = user.uid;
-    update((s) => ({ ...s, jobId, uid }));
+    update((s) => ({ ...s, jobId, uid, code }));
+    void saveMeta({});
     const small = await downscaleImage(photo);
     await uploadToStorage(ghoulPath(uid, jobId, 'selfie.jpg'), small);
     const selfie = await blobToInlineImage(small);
@@ -142,6 +158,7 @@ export async function runPipeline(
     update((s) => ({ ...s, brandedImageBlob, brandedImageUrl }));
     set('avatar', 'done', 'Saved avatar.png + avatar-branded.jpg');
     void saveMeta({ ghoulName: brief.ghoulName });
+    void publishTicket(brandedImageUrl, undefined, brief.ghoulName);
 
     // ── Challenge 4: Gemini Omni video (Vercel Function) ─────────────────
     set('video', 'running', 'Waking Gemini Omni in the crypt…');
@@ -152,6 +169,7 @@ export async function runPipeline(
     recordInteractionUsage('video', omniUsage);
     update((s) => ({ ...s, videoUrl }));
     set('video', 'done', 'Saved video.mp4 to Firebase Storage');
+    let shareVideoUrl = videoUrl;
 
     // ── Logos on the video (browser re-encode) ────────────────────────────
     set('brand', 'running', 'Adding the AI DevCamp + GDG London logos…');
@@ -162,6 +180,7 @@ export async function runPipeline(
         brandedVideoBlob,
       );
       update((s) => ({ ...s, brandedVideoBlob, brandedVideoUrl }));
+      shareVideoUrl = brandedVideoUrl;
       set('brand', 'done', 'Saved branded video');
     } catch (err) {
       // Not fatal: the clean video still plays (with an on-screen logo overlay).
@@ -170,6 +189,7 @@ export async function runPipeline(
 
     await captionTask;
     await saveMeta({ status: 'completed', ghoulName: brief.ghoulName, caption });
+    await publishTicket(brandedImageUrl, shareVideoUrl, brief.ghoulName);
   } catch (err) {
     const e = err as Error & { challenge?: number };
     const todoMatch = /Challenge (\d) is still a TODO/.exec(e.message);

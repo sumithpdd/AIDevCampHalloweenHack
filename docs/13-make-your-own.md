@@ -18,11 +18,11 @@ npm run dev
 |---|---|---|
 | Event name, logos, watermark line, hashtags | `src/lib/branding.ts` + files in `public/branding/` | Logos sit on dark stickers. Transparent PNG/WebP works best. |
 | Backdrops (where) | `src/data/backgrounds.ts` | `preview` is just CSS for the picker tile. |
-| Characters (who + camera move) | `src/data/prompts.ts` | Keep `motion` as **one continuous 8-second shot**. Omni does best with one camera move. |
+| Characters (who + camera move) | `src/data/prompts.ts` | Keep `motion` as **one continuous 8-second shot**. Costume is clothing. Do not ask for a new skin colour or face paint that covers features. |
 | Curated scenes (backdrop × character) | `src/data/booth-scenes.ts` | Mark 4 as `featured`. |
 | Art-director rules | `src/lib/briefPrompt.ts` | Keep the identity-preservation and family-friendly rules. Change tone, era and word counts. |
 | Brief fields | `src/lib/briefPrompt.ts` (`GhoulBrief`) + `ghoulBriefSchema` in `promptExpansion.ts` | Rename fields in both places. The schema is the contract. |
-| Portrait wrapper sentence | `src/lib/avatar.ts` (`promptText`) | "Photorealistic", "no text, no watermark" stay useful in any theme. |
+| Portrait wrapper sentence | `src/lib/avatar.ts` (`promptText`) | Keep the identity lock: same people, same faces. "No text, no watermark" stays useful in any theme. |
 | Video wrapper sentence | `server/omni.ts` (`buildVideoInstruction`) | Replace "Halloween" with your theme. |
 | Title, buttons, stage labels | `src/App.tsx`, `src/components/Progress.tsx`, `index.html` | |
 | Colours, fonts, bats & fog | `src/index.css` | All colours are CSS variables in `:root`. |

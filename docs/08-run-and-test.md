@@ -29,13 +29,13 @@ npm run typecheck     # or /hack:check in Gemini CLI
 npm run dev           # http://localhost:5173
 ```
 
-1. Allow the camera (or switch to **Upload a photo**). Use a well-lit, front-facing photo.
+1. Allow the camera (or switch to **Upload a photo**). One person or a group. Use a well-lit photo where every face is visible.
 2. Pick a nightmare and an orientation.
 3. **Summon my ghoul** and watch the four stages:
 
 | Stage | Model / service | Typical time |
 |---|---|---|
-| 🎃 Upload selfie | Firebase Auth + Storage | < 2 s |
+| 🎃 Upload photo | Firebase Auth + Storage | < 2 s |
 | 🎃 Write the ghoul brief | `gemini-3.8-flash` (thinking: high) | 5–15 s |
 | 🎃 Render the avatar | Nano Banana 2 `gemini-3.1-flash-image` | 10–30 s |
 | 🎃 Animate the video | Gemini Omni 1.1 Flash | 30–120 s |

@@ -10,12 +10,12 @@
 This is image-to-image on the same Firebase AI Logic client as Challenge 2, with a different model and a
 different response type. The selfie arrives as pixels (`inlineData`). `brief.avatarPrompt` arrives as the
 direction. `responseModalities` includes `IMAGE`, so the model may return a picture. `imageConfig.aspectRatio`
-is the frame the guest picked (`9:16` or `16:9`). The face stays recognisable because the photograph is an
-input, and because `promptText` repeats that requirement around the brief. If a safety filter blocks the
+is the frame the guest picked (`9:16` or `16:9`). One person or a group stays recognisable because the photograph is an
+input, and because `promptText` locks faces and only allows clothing, props, background, and lighting. If a safety filter blocks the
 picture, `inlineDataParts()` is empty and the thrown error includes any text the model did return.
 
 ## Goal
-Send the selfie and `brief.avatarPrompt` to **Nano Banana 2 (`gemini-3.1-flash-image`)** through
+Send the photo and `brief.avatarPrompt` to **Nano Banana 2 (`gemini-3.1-flash-image`)** through
 Firebase AI Logic and get back a portrait in the orientation the guest picked (9:16 for a phone,
 16:9 for a big screen).
 
@@ -58,8 +58,8 @@ const imagePart = result.response.inlineDataParts()?.[0];
 // (given, below the gap) recordUsage('avatar', result.response.usageMetadata) — 🔢 tokens for the UI
 ```
 
-- Passing the **selfie as a part** is what makes it image-to-image — Nano Banana keeps the face and changes the rest.
-- `promptText` (given) wraps `brief.avatarPrompt` with "keep their face clearly recognisable … no text, no watermark".
+- Passing the **photo as a part** is what makes it image-to-image — Nano Banana keeps the people and changes the wardrobe and the room.
+- `promptText` (given) wraps `brief.avatarPrompt` with an identity lock: same people, same faces, no text, no watermark. If the brief asks to alter a face, that part is ignored.
 - If safety filters block the image, `inlineDataParts()` is empty; the code below the gap throws a readable error
   including any text the model returned.
 </details>

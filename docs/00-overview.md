@@ -1,10 +1,11 @@
 # Step 1 · Overview — what you're building
 
 > 🧭 **Read this for the ideas.** The room follows the [workshop](15-workshop.md): concepts first, React last.
+> The same path, with a diagram, is [Raise Your Own Haunt](16-raise-your-own-haunt.md) and on the booth at `/build`.
 > ⏱️ 10 min · Formula E codelab: *1 · Introduction*
 
-**The Haunted Kiosk** is a photo booth. A guest takes a selfie, picks a scene, and Gemini turns them into
-a character — first as a portrait, then as an 8-second video. Halloween is the sample theme in this repo.
+**The Haunted Kiosk** is a photo booth. A guest uploads a photo of one person or a group, picks a scene, and Gemini edits them into
+a character — first as a portrait, then as an 8-second video. Faces stay. Clothes, props, and the room change. Halloween is the sample theme in this repo.
 In the workshop you write your own scene, then ask Claude, Gemini, or Antigravity to build a **light** one-page app. [Make your own](13-make-your-own.md) is how you reskin this full kiosk afterwards.
 
 It is the twin of Google's **Formula E GenMedia Kiosk** codelab. The *concept* and the *four challenges*
@@ -18,7 +19,7 @@ These are the ideas. In the [workshop](15-workshop.md) you learn them before any
 
 A scene (`src/data/booth-scenes.ts` = backdrop × character) resolves to three strings: **costume** (who they become), **setting** (where),
 and **motion** (what the camera and the character do for 8 seconds). That is deliberately short.
-`buildBriefInstruction()` in `src/lib/briefPrompt.ts` hands the recipe and the selfie to Gemini 3.8 Flash
+`buildBriefInstruction()` in `src/lib/briefPrompt.ts` hands the recipe and the photo to Gemini 3.8 Flash
 and asks for a **brief**:
 
 | Field | Who consumes it |
@@ -30,16 +31,20 @@ and asks for a **brief**:
 
 Challenge 2 forces that shape with **structured output**: `responseMimeType: 'application/json'` plus a
 `responseSchema`. The pipeline then passes fields, not a blob of prose. Temperature stays low (`0.2`) so
-the description stays close to the photo. Thinking level `HIGH` gives the model room to look at the face
+the description stays close to the photo. Thinking level `HIGH` gives the model room to look at the people
 before it writes.
 
 ### The photograph stays in the request
 
-Both the brief and the portrait send the selfie as an image part (`inlineData`), next to the text.
-Describing a face in words and hoping the image model invents the same person is a different product.
-Image-to-image is why the guest still looks like themselves in the costume. The portrait call also sets
+Both the brief and the portrait send the photo as an image part (`inlineData`), next to the text.
+The photo may show one person or a group. Describing a face in words and hoping the image model invents
+the same person is a different product. Image-to-image is why they still look like themselves.
+The identity lock in `briefPrompt.ts`, `avatar.ts`, and `server/omni.ts` says what may change (clothing,
+props, background, lighting) and what may not (face shape, eyes, skin, hair, glasses, expression, who is
+in the frame). Costumes in `src/data/prompts.ts` are wardrobe, not a new skin colour or face paint that
+covers features. The portrait call also sets
 `responseModalities` so the model is allowed to return pixels, and `imageConfig.aspectRatio` so 9:16 and
-16:9 are the frame the guest picked.
+16:9 are the frame the guest picked. Photos are downscaled to a long edge of 1920 so a group still has readable faces.
 
 ### Two ways of calling Gemini, on purpose
 
@@ -141,4 +146,4 @@ sequenceDiagram
 | `gcloud run deploy` ×2 | `vercel --prod` ×1 | — |
 
 ---
-[⬅️ README](../README.md) · [Workshop ➡️](15-workshop.md)
+[⬅️ README](../README.md) · [Workshop ➡️](15-workshop.md) · [Raise Your Own Haunt](16-raise-your-own-haunt.md)

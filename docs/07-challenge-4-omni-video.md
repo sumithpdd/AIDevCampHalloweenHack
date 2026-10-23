@@ -14,8 +14,8 @@
 
 ## The concept
 Omni animates the **portrait you already saved**, using `brief.videoPrompt` as the shot description.
-`buildVideoInstruction()` wraps that prompt into one fixed sentence: 8 seconds, keep the face and costume,
-family-friendly, no on-screen text. The function reads `avatar.png` from Storage with the Admin SDK, because
+`buildVideoInstruction()` wraps that prompt so the clip animates the portrait without redesigning anyone: camera, cloth, and background may move, faces must not morph, and nobody may appear or disappear.
+Family-friendly, no on-screen text. The function reads `avatar.png` from Storage with the Admin SDK, because
 `storage.rules` only let the browser upload images. It will only do that after the Firebase ID token's uid
 matches the folder.
 

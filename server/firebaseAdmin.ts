@@ -189,6 +189,17 @@ export async function listAllJobs(limit = 200): Promise<AdminJob[]> {
 export async function deleteJobFolder(uid: string, jobId: string): Promise<number> {
   const prefix = `ghouls/${uid}/${jobId}/`;
   const [files] = await bucket().getFiles({ prefix });
+  const metaFile = files.find((f) => f.name.endsWith('/meta.json'));
+  let code = '';
+  if (metaFile) {
+    try {
+      const meta = JSON.parse((await metaFile.download())[0].toString('utf8')) as { code?: string };
+      if (meta.code && /^[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{6}$/.test(meta.code)) code = meta.code;
+    } catch {
+      code = '';
+    }
+  }
   await Promise.all(files.map((f) => f.delete({ ignoreNotFound: true })));
+  if (code) await bucket().file(`codes/${code}.json`).delete({ ignoreNotFound: true });
   return files.length;
 }

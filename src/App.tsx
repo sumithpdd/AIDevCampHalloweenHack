@@ -5,6 +5,7 @@ import { StepNav } from './components/StepNav';
 import { ScenePicker } from './components/ScenePicker';
 import { DetailsForm } from './components/DetailsForm';
 import { SharePanel } from './components/SharePanel';
+import { PickupCard } from './components/PickupCard';
 import { SavedPosts } from './components/SavedPosts';
 import { TokenSummary } from './components/TokenSummary';
 import { SCENES, type Scene } from './lib/scenes';
@@ -90,7 +91,7 @@ export default function App() {
   const removeMine = async () => {
     if (!pipeline?.uid || !pipeline.jobId) return;
     if (!window.confirm('Delete your selfie, portrait and video from our storage? This cannot be undone.')) return;
-    await deleteJob(pipeline.uid, pipeline.jobId);
+    await deleteJob(pipeline.uid, pipeline.jobId, pipeline.code);
     setDeleted(true);
   };
 
@@ -197,6 +198,10 @@ export default function App() {
               {pipeline.brief?.personDescription && <p className="muted">{pipeline.brief.personDescription}</p>}
 
               <Progress state={pipeline} />
+
+              {pipeline.code && !deleted && (
+                <PickupCard code={pipeline.code} photoUrl={pipeline.brandedImageUrl} videoUrl={showVideo} />
+              )}
 
               {pipeline.error && (
                 <div className="alert">

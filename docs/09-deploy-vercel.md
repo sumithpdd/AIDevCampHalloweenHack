@@ -86,7 +86,7 @@ vercel --prod
 > Formula E codelab section 6, "Testing & Experiencing", on your phone.
 
 1. Open the Vercel URL on your phone. HTTPS means the camera works.
-2. Take a selfie, pick **Ghost of the Last Tube**, choose **Portrait 9:16**.
+2. Take a photo of one person or a group, pick **Ghost of the Last Tube**, choose **Portrait 9:16**. Open `/build` for the build-it-yourself lab.
 3. Watch Gemini 3.8 Flash → Nano Banana 2 → Gemini Omni work through the stages.
 4. Play the video, download it, share it. 👻
 

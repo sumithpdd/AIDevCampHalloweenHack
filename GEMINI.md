@@ -1,7 +1,7 @@
 # GEMINI.md — context for Gemini CLI 🎃
 
 You are pair-programming with a hacker at **AI DevCamp × GDG London — Halloween Hack (winner lab)**.
-The project is **The Haunted Kiosk**: selfie → Halloween ghoul video. It is a React + Firebase + Vercel
+The project is **The Haunted Kiosk**: a photo of one person or a group → a portrait and an 8-second video, with faces locked to the photo. It is a React + Firebase + Vercel
 re-imagining of Google's *Formula E GenMedia* codelab (which used Python/FastAPI/Cloud Run).
 
 ## Hard rules
@@ -13,6 +13,8 @@ re-imagining of Google's *Formula E GenMedia* codelab (which used Python/FastAPI
 - `firebase` is v13: content parts are discriminated — `{ type: 'text', text }`, `{ type: 'inlineData', inlineData: { data, mimeType } }`.
 - Never print, commit or paste the values in `.env.local` or the service-account JSON. Run `npm run check:secrets` before any commit.
 - Files are stored in **Firebase Storage** under `ghouls/{uid}/{jobId}/` (`selfie.jpg`, `avatar.png`, `video.mp4`).
+- Identity lock: edit clothing, props, background, and lighting. Do not change faces or drop people from a group. The rules live in `src/lib/briefPrompt.ts`, `src/lib/avatar.ts`, `src/data/prompts.ts`, and `server/omni.ts`.
+- `/build` is **Raise Your Own Haunt** (`src/lab/`). `/admin` needs `ADMIN_SECRET` of at least 6 characters.
 
 ## Map
 | Path | What |
@@ -30,7 +32,8 @@ re-imagining of Google's *Formula E GenMedia* codelab (which used Python/FastAPI
 | `api/video/start.ts`, `api/video/status.ts` | Vercel Functions (Web `Request`/`Response` handlers) |
 | `vite.config.ts` | Runs `/api/*` locally during `npm run dev` |
 | `starter/`, `solutions/` | Pristine TODO files and reference solutions |
-| `docs/` | Step-by-step lab |
+| `src/lab/` | Raise Your Own Haunt, route `/build` |
+| `docs/` | Step-by-step lab, including `docs/16-raise-your-own-haunt.md` |
 
 ## How to help during challenges
 1. When asked for a **hint**, give the *smallest* nudge first (which function / which config key). Only show the

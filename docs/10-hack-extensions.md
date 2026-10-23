@@ -18,7 +18,7 @@ You've finished the core lab. A new theme (different worlds, different art direc
 - **Second reference image** — like the Formula E lab's Gen4 car, pass a prop or venue photo to Nano Banana 2.
 - **Conversational re-edit** — Gemini Omni supports multi-turn editing: call `interactions.create` with
   `previous_interaction_id` and a prompt like *"make it rain bats"*. Add a "Remix" button.
-- **Group ghouls** — let 2–3 people snap selfies and send them all as parts for a group costume.
+- **Separate photos, one scene** — the booth already edits a single group photo. The harder version is two or three separate uploads combined into one frame.
 
 ## 🔴 Boss level (60+ min)
 - **Live narrator** — use the Gemini Live API (`firebase/ai` `getLiveGenerativeModel`) to have a spooky voice

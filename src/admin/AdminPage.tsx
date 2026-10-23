@@ -15,6 +15,7 @@ interface AdminJob {
     totalTokens?: number;
     usage?: Record<string, { total: number }>;
     status?: string;
+    code?: string;
     orientation?: string;
     error?: string;
   };
@@ -111,7 +112,7 @@ export function AdminPage() {
     if (!jobs) return [];
     return q
       ? jobs.filter((j) =>
-          [j.meta?.ghoulName, j.meta?.sceneTitle, j.meta?.firstName, j.meta?.caption, j.jobId].some((v) =>
+          [j.meta?.code, j.meta?.ghoulName, j.meta?.sceneTitle, j.meta?.firstName, j.meta?.caption, j.jobId].some((v) =>
             v?.toLowerCase().includes(q),
           ),
         )
@@ -178,7 +179,7 @@ export function AdminPage() {
               </div>
             </div>
             <div className="row spread">
-              <input className="search" placeholder="Filter by name, scene, caption…" value={filter} onChange={(e) => setFilter(e.target.value)} />
+              <input className="search" placeholder="Code, name, scene, caption…" value={filter} onChange={(e) => setFilter(e.target.value)} />
               <div className="row">
                 <button className="btn small ghost" onClick={() => void load()} disabled={busy}>
                   {busy ? 'Loading…' : '↻ Refresh'}
@@ -206,6 +207,7 @@ export function AdminPage() {
                   </div>
                   <div className="admin-body">
                     <div className="admin-name">{j.meta?.ghoulName ?? 'Unnamed ghoul'}</div>
+                    {j.meta?.code && <div className="pickup-code small">{j.meta.code}</div>}
                     <div className="muted small">
                       {j.meta?.sceneTitle ?? '—'} {j.meta?.firstName ? `· ${j.meta.firstName}` : ''}
                     </div>
@@ -229,6 +231,11 @@ export function AdminPage() {
                     {j.meta?.caption && <p className="admin-caption">{j.meta.caption}</p>}
                     {j.meta?.error && <p className="error-text small">{j.meta.error}</p>}
                     <div className="row">
+                      {j.meta?.code && (
+                        <a className="btn small ghost" href={`/r/${j.meta.code}`} target="_blank" rel="noreferrer">
+                          Pickup
+                        </a>
+                      )}
                       {j.urls.avatar && (
                         <a className="btn small ghost" href={j.urls.avatar} target="_blank" rel="noreferrer">
                           Photo

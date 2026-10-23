@@ -8,12 +8,12 @@
 
 ## The concept
 A scene (`src/data/booth-scenes.ts`) resolves to three short strings: costume, setting, motion. This challenge is the
-art director. Gemini 3.8 Flash sees those strings **and the selfie** and writes a brief the later models
+art director. Gemini 3.8 Flash sees those strings **and the photo** (one person or a group) and writes a brief the later models
 can follow. **Structured output** (`responseSchema` plus `application/json`) makes the reply four fields,
 so Challenge 3 reads `avatarPrompt` and Challenge 4 reads `videoPrompt`. Low temperature keeps the
 description close to the photo. `ThinkingLevel.HIGH` is the time the model spends looking before it writes.
-The rules it must follow — identity, family-friendly, word counts — live in `buildBriefInstruction()`
-(`src/lib/briefPrompt.ts`), which is the file you rewrite when the booth gets a new theme.
+The rules it must follow — same people, same faces, family-friendly, word counts — live in `buildBriefInstruction()`
+(`src/lib/briefPrompt.ts`), which is the file you rewrite when the booth gets a new theme. Costume text must not ask for a new skin colour or face paint that covers features.
 
 ## Goal
 Show Gemini the selfie plus the chosen scene and get back a **structured brief**:

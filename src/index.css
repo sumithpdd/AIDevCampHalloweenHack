@@ -298,10 +298,12 @@ a.btn { text-decoration: none; display: inline-flex; align-items: center; justif
 .lab-step table { width: 100%; border-collapse: collapse; margin: 0.75rem 0 1rem; font-size: 0.92rem; }
 .lab-step th, .lab-step td { text-align: left; padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--line); vertical-align: top; }
 .lab-step th { color: var(--pumpkin-2); font-weight: 600; }
-.concept {
+.concept, .lab-check {
   border-left: 3px solid var(--pumpkin); background: rgba(255, 122, 26, 0.08);
   padding: 0.7rem 0.9rem; border-radius: 0 12px 12px 0; margin: 0.9rem 0;
 }
+.lab-check { border-left-color: var(--slime); background: rgba(140, 255, 102, 0.08); }
+.lab-step h3 { font-size: 1rem; margin: 1.25rem 0 0.4rem; }
 .arch { width: 100%; height: auto; margin: 0.5rem 0 1rem; }
 .tech { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin: 0.5rem 0 1rem; }
 .tech-chip { border: 1px solid var(--line); border-radius: 999px; padding: 0.35rem 0.75rem; color: var(--text); background: rgba(255,255,255,0.04); }
@@ -315,3 +317,15 @@ a.btn { text-decoration: none; display: inline-flex; align-items: center; justif
 .lab-done { text-align: center; }
 .lab-done ul { text-align: left; max-width: 46rem; margin: 1rem auto; }
 .lab-burst { font-size: 4rem; margin: 0; }
+
+/* ── Pickup code + QR ──────────────────────────── */
+.pickup { margin: 1rem 0; padding: 0.9rem 1rem; border: 1px solid var(--line); border-radius: 14px; text-align: center; }
+.pickup-code {
+  font-family: ui-monospace, monospace; font-size: 2rem; letter-spacing: 0.28em; margin: 0.2rem 0 0.8rem;
+  color: var(--pumpkin-2);
+}
+.pickup-code.small { font-size: 1.15rem; letter-spacing: 0.18em; margin: 0.15rem 0 0.4rem; }
+.pickup-qrs { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }
+.qr { margin: 0; }
+.qr img { width: 160px; height: 160px; background: #fff8ee; border-radius: 12px; }
+.qr figcaption { color: var(--muted); font-size: 0.85rem; margin-top: 0.35rem; }
