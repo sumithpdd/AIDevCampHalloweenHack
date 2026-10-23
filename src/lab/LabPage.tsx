@@ -49,37 +49,52 @@ export function LabPage() {
           own. The single Generate button is step 10, after Challenges 1 to 4 already work.
         </p>
 
-        <ol className="lab-nav">
-          {STEPS.map((item, i) => (
-            <li key={item.id}>
-              <button type="button" className={i === step ? 'on' : ''} onClick={() => go(i)} aria-current={i === step ? 'step' : undefined}>
-                <span>{i}</span>
-                {item.label}
+        <div className="lab-shell">
+          <aside className="lab-side" aria-label="Lab steps">
+            <p className="lab-side-kicker">The blood path</p>
+            <ol className="lab-nav">
+              {STEPS.map((item, i) => (
+                <li key={item.id}>
+                  <button
+                    type="button"
+                    className={i === step ? 'on' : i < step ? 'done' : ''}
+                    onClick={() => go(i)}
+                    aria-current={i === step ? 'step' : undefined}
+                  >
+                    <span className="lab-nav-icon" aria-hidden>
+                      {item.icon}
+                    </span>
+                    <span className="lab-nav-num">{i}</span>
+                    {item.label}
+                  </button>
+                </li>
+              ))}
+            </ol>
+          </aside>
+
+          <div className="lab-body">
+            <article className="card lab-step">
+              <LabStep step={step} onCopy={copyPrompt} copied={copied} />
+            </article>
+
+            <div className="lab-pager">
+              <button type="button" className="btn ghost" disabled={step === 0} onClick={() => go(step - 1)}>
+                Back
               </button>
-            </li>
-          ))}
-        </ol>
-
-        <article className="card lab-step">
-          <LabStep step={step} onCopy={copyPrompt} copied={copied} />
-        </article>
-
-        <div className="lab-pager">
-          <button type="button" className="btn ghost" disabled={step === 0} onClick={() => go(step - 1)}>
-            Back
-          </button>
-          <span>
-            Step {step} of {STEPS.length - 1}
-          </span>
-          {step < STEPS.length - 1 ? (
-            <button type="button" className="btn" onClick={() => go(step + 1)}>
-              Next
-            </button>
-          ) : (
-            <a className="btn" href="/">
-              Open the booth
-            </a>
-          )}
+              <span>
+                Step {step} of {STEPS.length - 1}
+              </span>
+              {step < STEPS.length - 1 ? (
+                <button type="button" className="btn" onClick={() => go(step + 1)}>
+                  Next
+                </button>
+              ) : (
+                <a className="btn" href="/">
+                  Open the booth
+                </a>
+              )}
+            </div>
+          </div>
         </div>
       </main>
     </div>

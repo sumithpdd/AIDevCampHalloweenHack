@@ -5,20 +5,20 @@ import { IDE_PROMPT } from './idePrompt';
 const DOCS = 'https://github.com/sumithpdd/AIDevCampHalloweenHack/blob/main/docs';
 
 export const STEPS = [
-  { id: 'picture', label: 'Picture' },
-  { id: 'kit', label: 'Your kit' },
-  { id: 'scene', label: 'The scene' },
-  { id: 'project', label: 'Firebase' },
-  { id: 'services', label: 'Services' },
-  { id: 'keys', label: 'Keys' },
-  { id: 'c1', label: 'Challenge 1' },
-  { id: 'c2', label: 'Challenge 2' },
-  { id: 'c3', label: 'Challenge 3' },
-  { id: 'c4', label: 'Challenge 4' },
-  { id: 'page', label: 'One page' },
-  { id: 'prompt', label: 'The prompt' },
-  { id: 'ship', label: 'Ship' },
-  { id: 'done', label: 'Done' },
+  { id: 'picture', label: 'Picture', icon: '🕯️' },
+  { id: 'kit', label: 'Your kit', icon: '🔮' },
+  { id: 'scene', label: 'The scene', icon: '📜' },
+  { id: 'project', label: 'Firebase', icon: '🔥' },
+  { id: 'services', label: 'Services', icon: '🕷️' },
+  { id: 'keys', label: 'Keys', icon: '🗝️' },
+  { id: 'c1', label: 'Challenge 1', icon: '👻' },
+  { id: 'c2', label: 'Challenge 2', icon: '🦇' },
+  { id: 'c3', label: 'Challenge 3', icon: '🧛' },
+  { id: 'c4', label: 'Challenge 4', icon: '💀' },
+  { id: 'page', label: 'One page', icon: '📖' },
+  { id: 'prompt', label: 'The prompt', icon: '🩸' },
+  { id: 'ship', label: 'Ship', icon: '⚰️' },
+  { id: 'done', label: 'Done', icon: '🎃' },
 ] as const;
 
 export function LabStep({
