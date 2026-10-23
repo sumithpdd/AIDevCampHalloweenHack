@@ -6,7 +6,8 @@ turns that portrait into an 8-second clip. Halloween is the sample theme. The pi
 This is a **React + Firebase + Vercel** version of Google's
 [Formula E GenMedia codelab](https://codelabs.developers.google.com/formula-e-genmedia-lab-codelab).
 The four challenges are the same. There is no Python, FastAPI, Docker, or Cloud Run.
-You can follow the lab with the TODOs left in, or drop in the finished answers and change the theme.
+
+In the [workshop](docs/15-workshop.md) you learn those ideas first, then ask **Claude**, **Gemini**, or **Antigravity** to build a light one-page app. The React kiosk in this repository is the reference, and the full event booth.
 
 ```
  Browser (React + Vite)                                   Vercel Functions (/api, TypeScript)
@@ -40,7 +41,7 @@ On top of the four codelab challenges, the app is ready for a real event booth. 
 
 ## The ideas
 
-Read [docs/00-overview.md](docs/00-overview.md) for the full walkthrough. These six ideas are the whole app.
+The [workshop](docs/15-workshop.md) teaches these ideas before any React. [docs/00-overview.md](docs/00-overview.md) is the same map, tied to this repo's files.
 
 **One photo, three jobs.** A scene is a short recipe: costume, place, and camera move (`src/data/booth-scenes.ts` pairs a backdrop from `backgrounds.ts` with a character from `prompts.ts`).
 Gemini 3.8 Flash looks at the face and expands that recipe into a name, an image prompt, and a video prompt.
@@ -94,31 +95,44 @@ npm run solve -- all
 npm run dev    # http://localhost:5173
 ```
 
-`npm run reset-challenges` puts the TODOs back when you want the workshop version.
+`npm run reset-challenges` puts the TODOs back in this reference repo. The workshop itself is a new folder: [docs/15-workshop.md](docs/15-workshop.md).
 
-## Codelab walkthrough
+## Workshop
 
-Follow these steps in order. They mirror the sections of the
-[Formula E codelab](https://codelabs.developers.google.com/formula-e-genmedia-lab-codelab). Total time ≈ 2½ hours.
-The app runs from the start: each AI stage stops with **"Challenge N is still a TODO"** until you fill that gap.
+Follow [the workshop](docs/15-workshop.md). About 2 hours. **Concepts first. The React screen is the last step.**
+You build a light booth in an empty folder with **Claude**, **Gemini**, or **Antigravity**. This repo is the reference, not the starting file.
 
-| Step | Doc | Time | Formula E section | What you do |
+| Step | Doc | Time | Concept | You do not touch React yet |
 |---|---|---|---|---|
-| 1 | [Introduction](docs/00-overview.md) | 10 min | 1 · Introduction | The pipeline, the concepts, the Formula E → Halloween mapping |
-| 2 | [Prerequisites](docs/01-prerequisites.md) | 10 min | 2 · Environment setup | Node, accounts, CLIs, clone the repo |
-| 3 | [Firebase setup](docs/02-firebase-setup.md) | 25 min | 2 · Environment setup | Project, AI Logic, Anonymous Auth, Storage + rules, service account, Gemini key, App Check |
-| 4 | [Gemini CLI](docs/03-gemini-cli.md) | 10 min | 2 · (Cloud Shell Editor) | Install Gemini CLI, `GEMINI.md`, the `/hack:*` commands |
-| 5 | [Challenge 1](docs/04-challenge-1-firebase-ai-logic.md) | 5 min | 3 · TODO 1 | Create the Firebase AI Logic client |
-| 6 | [Challenge 2](docs/05-challenge-2-prompt-expansion.md) | 15 min | 3 · TODO 2 | `gemini-3.8-flash` turns selfie + scene into a JSON brief |
-| 7 | [Challenge 3](docs/06-challenge-3-nano-banana-avatar.md) | 15 min | 3 · TODO 3 | Nano Banana 2 image-to-image portrait |
-| 8 | [Challenge 4](docs/07-challenge-4-omni-video.md) | 20 min | 3 · TODO 4a/4b | Gemini Omni in the background, then poll |
-| 9 | [Assemble & run](docs/08-run-and-test.md) | 15 min | 4 · Assembling | Tour of the provided pieces, run end to end |
-| 10 | [Push & deploy](docs/09-deploy-vercel.md) | 15 min | 5 · Deploying + 6 · Testing | Secret scan, GitHub, Vercel, try it on your phone |
-| 11 | [Conclusion & clean-up](docs/12-cleanup.md) | 5 min | 7 · Conclusion | Recap, rotate keys, delete resources |
+| 1 | [One photo, three jobs](docs/15-workshop.md#step-1--one-photo-three-jobs-10-min) | 10 min | A scene is a recipe. A brief is the contract between models. | Write one scene on paper |
+| 2 | [Accounts](docs/01-prerequisites.md) | 10 min | Blaze pays for Storage. Prepay credits pay for Gemini. | — |
+| 3 | [Firebase, no UI](docs/02-firebase-setup.md) | 25 min | Two doors into Gemini. A guest is a uid. App Check locks the proxy. | `.env.local` only |
+| 4 | [Prompt expansion](docs/15-workshop.md#step-4--prompt-expansion-15-min) | 15 min | Structured JSON, low temperature, the selfie goes in as pixels. | Ask the assistant for the schema |
+| 5 | [Portrait](docs/15-workshop.md#step-5--the-portrait-is-image-to-image-10-min) | 10 min | Image-to-image. The face stays because the photo is an input. | One sentence of prompt rules |
+| 6 | [Video](docs/15-workshop.md#step-6--video-is-a-job-not-a-request-15-min) | 15 min | Start the job, poll from the page. The Gemini key stays on the server. | Draw the two routes |
+| 7 | [Build the light app](docs/15-workshop.md#step-7--build-the-light-app) | 45–60 min | Same pipeline, one page, three scenes. | **Now** the assistant writes the UI |
 
-**Advanced level:** [From codelab to event booth](docs/14-advanced-level.md) (curated scenes, logos on video, captions, sharing, printing, tokens, admin)
+**Light** means selfie → brief → portrait → video. Logos, captions, print, share, and `/admin` stay in this repo. See the [advanced guide](docs/14-advanced-level.md) after your light app works.
 
-**Bonus:** [Hack extensions](docs/10-hack-extensions.md) · [Make your own theme](docs/13-make-your-own.md) ·
+### Reference lab (optional)
+
+The files in this repo are a full kiosk with four TODOs, matching the
+[Formula E codelab](https://codelabs.developers.google.com/formula-e-genmedia-lab-codelab).
+Fill them by hand only if you want that exercise. Each AI stage stops with **"Challenge N is still a TODO"** until you do.
+
+| | Doc | Formula E section |
+|---|---|---|
+| Challenge 1 | [Firebase AI Logic client](docs/04-challenge-1-firebase-ai-logic.md) | TODO 1 |
+| Challenge 2 | [JSON brief](docs/05-challenge-2-prompt-expansion.md) | TODO 2 |
+| Challenge 3 | [Portrait](docs/06-challenge-3-nano-banana-avatar.md) | TODO 3 |
+| Challenge 4 | [Omni, background + poll](docs/07-challenge-4-omni-video.md) | TODO 4a / 4b |
+| Run | [Assemble & run](docs/08-run-and-test.md) | 4 · Assembling |
+| Ship | [Push & deploy](docs/09-deploy-vercel.md) | 5 · Deploying |
+| Done | [Clean-up](docs/12-cleanup.md) | 7 · Conclusion |
+
+`npm run solve -- 2` drops in the answer for Challenge 2 (`all` for every challenge). `npm run reset-challenges` puts the TODOs back.
+
+**Also:** [Hack extensions](docs/10-hack-extensions.md) · [Make your own theme](docs/13-make-your-own.md) ·
 [Troubleshooting](docs/11-troubleshooting.md)
 
 Stuck on a gap? `npm run solve -- 2` copies the answer for Challenge 2 (`all` for every challenge).

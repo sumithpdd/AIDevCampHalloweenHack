@@ -1,19 +1,18 @@
 # Step 1 · Overview — what you're building
 
-> 🧭 **Codelab step 1 of 11** · ⏱️ 10 min · Formula E codelab: *1 · Introduction*
+> 🧭 **Read this for the ideas.** The room follows the [workshop](15-workshop.md): concepts first, React last.
+> ⏱️ 10 min · Formula E codelab: *1 · Introduction*
 
 **The Haunted Kiosk** is a photo booth. A guest takes a selfie, picks a scene, and Gemini turns them into
-a character — first as a portrait, then as an 8-second video. Halloween (Vampire of Tower Bridge, Ghost of
-the Last Tube, …) is the sample theme. [Make your own](13-make-your-own.md) is how you swap that theme
-for a world of your own.
+a character — first as a portrait, then as an 8-second video. Halloween is the sample theme in this repo.
+In the workshop you write your own scene, then ask Claude, Gemini, or Antigravity to build a **light** one-page app. [Make your own](13-make-your-own.md) is how you reskin this full kiosk afterwards.
 
 It is the twin of Google's **Formula E GenMedia Kiosk** codelab. The *concept* and the *four challenges*
 are the same. The *stack* is different:
 
 ## Concepts
 
-These are the ideas the rest of the lab is exercising. The files named here already exist. The challenges
-ask you to fill the Gemini calls inside them.
+These are the ideas. In the [workshop](15-workshop.md) you learn them before anyone opens a component. The files named here are this repo's reference implementation.
 
 ### A scene is a recipe, a brief is a script
 
@@ -142,4 +141,4 @@ sequenceDiagram
 | `gcloud run deploy` ×2 | `vercel --prod` ×1 | — |
 
 ---
-[⬅️ README](../README.md) · [📋 All steps](../README.md#codelab-walkthrough) · [Prerequisites ➡️](01-prerequisites.md)
+[⬅️ README](../README.md) · [Workshop ➡️](15-workshop.md)

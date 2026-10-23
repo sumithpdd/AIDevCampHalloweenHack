@@ -1,6 +1,7 @@
 # Step 5 · Challenge 1 — Initialise Firebase AI Logic
 
-> 🧭 **Codelab step 5 of 11** · ⏱️ 5 min · Formula E codelab: *3 · Challenge 1 — client initialisation*
+> 🧭 **Reference lab, not the workshop.** Learn the idea in [workshop step 3](15-workshop.md#step-3--firebase-still-no-ui-25-min). Claude, Gemini, or Antigravity write the light app in [step 7](15-workshop.md#step-7--build-the-light-app).
+> ⏱️ 5 min · Formula E codelab: *3 · Challenge 1 — client initialisation*
 
 > Formula E equivalent: `client = genai.Client(enterprise=True, project=…, location=…)`
 

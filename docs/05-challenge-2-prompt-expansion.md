@@ -1,6 +1,7 @@
 # Step 6 · Challenge 2 — Prompt expansion with `gemini-3.8-flash`
 
-> 🧭 **Codelab step 6 of 11** · ⏱️ 15 min · Formula E codelab: *3 · Challenge 2 — prompt expansion*
+> 🧭 **Reference lab, not the workshop.** The concept is [workshop step 4](15-workshop.md#step-4--prompt-expansion-15-min).
+> ⏱️ 15 min · Formula E codelab: *3 · Challenge 2 — prompt expansion*
 
 > Formula E equivalent: `client.interactions.create(model="gemini-3.8-flash", input=[text, image],
 > generation_config={"thinking_level": "high", "temperature": 0.2})`

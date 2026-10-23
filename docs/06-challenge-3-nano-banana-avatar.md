@@ -1,6 +1,7 @@
 # Step 7 · Challenge 3 — Avatar generation with Nano Banana 2
 
-> 🧭 **Codelab step 7 of 11** · ⏱️ 15 min · Formula E codelab: *3 · Challenge 3 — avatar generation*
+> 🧭 **Reference lab, not the workshop.** The concept is [workshop step 5](15-workshop.md#step-5--the-portrait-is-image-to-image-10-min).
+> ⏱️ 15 min · Formula E codelab: *3 · Challenge 3 — avatar generation*
 
 > Formula E equivalent: `client.models.generate_content(model="gemini-3.1-flash-image", contents=[text, image, car],
 > config=GenerateContentConfig(response_modalities=["IMAGE"], image_config=ImageConfig(aspect_ratio="16:9")))`

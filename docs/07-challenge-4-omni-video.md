@@ -1,6 +1,7 @@
 # Step 8 · Challenge 4 — Video generation with Gemini Omni 1.1 Flash
 
-> 🧭 **Codelab step 8 of 11** · ⏱️ 20 min · Formula E codelab: *3 · Challenge 4 — video generation*
+> 🧭 **Reference lab, not the workshop.** The concept is [workshop step 6](15-workshop.md#step-6--video-is-a-job-not-a-request-15-min).
+> ⏱️ 20 min · Formula E codelab: *3 · Challenge 4 — video generation*
 
 > Formula E equivalent:
 > ```python
