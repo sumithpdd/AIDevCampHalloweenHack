@@ -1,0 +1,10 @@
+description = "Pre-flight checklist before deploying to Vercel."
+prompt = """
+Help me deploy to Vercel. Check, one by one, and tell me what is missing:
+0. Secret scan passes: !{npm run check:secrets 2>&1 | tail -n 12}
+1. `npm run build` passes: !{npm run build 2>&1 | tail -n 15}
+2. .env.local has every key from .env.example (show key NAMES only, never print values).
+3. Storage rules deployed (storage.rules) and Anonymous Auth enabled.
+4. The Vercel domain is added to Firebase Auth → Settings → Authorized domains.
+Then give me the exact `vercel` CLI commands to add env vars and deploy to production (see docs/09-deploy-vercel.md).
+"""

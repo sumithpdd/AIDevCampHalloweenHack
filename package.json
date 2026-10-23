@@ -1,0 +1,36 @@
+{
+  "name": "aidevcamp-halloween-hack",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "AI DevCamp x GDG London Halloween Hack winner lab: React + Firebase AI Logic + Firebase Storage + Gemini Omni on Vercel",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -p tsconfig.json --noEmit && vite build",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "preview": "vite preview",
+    "solve": "node scripts/solve.mjs",
+    "reset-challenges": "node scripts/solve.mjs --reset",
+    "firebase:deploy-rules": "firebase deploy --only storage",
+    "check:secrets": "node scripts/check-secrets.mjs",
+    "vercel-build": "node scripts/vercel-build.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@google/genai": "^2.31.0",
+    "firebase": "^13.1.0",
+    "firebase-admin": "^14.5.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^4.7.0",
+    "typescript": "^7.0.2",
+    "vite": "^6.4.5"
+  }
+}

@@ -1,0 +1,8 @@
+description = "Invent and add a new Halloween scene. Usage: /hack:scene <idea>"
+prompt = """
+Add a new entry to the SCENES array in src/lib/scenes.ts based on this idea: {{args}}
+
+Follow the existing shape (id, emoji, title, costume, setting, motion). Keep it spooky but family-friendly,
+make `motion` a single continuous 8-second camera move, and if possible give it a London twist.
+Then run `npm run typecheck`.
+"""

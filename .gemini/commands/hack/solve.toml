@@ -1,0 +1,6 @@
+description = "Show and explain the reference solution for a challenge. Usage: /hack:solve <1|2|3|4>"
+prompt = """
+Show me the reference solution for Challenge {{args}} from the solutions/ folder, explain each line
+(especially the model ID, the config object and how the multimodal parts are built), and compare it
+with what is currently in my working file. Do NOT overwrite my file unless I say "apply it".
+"""

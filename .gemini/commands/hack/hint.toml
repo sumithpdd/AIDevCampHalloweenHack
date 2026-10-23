@@ -1,0 +1,11 @@
+description = "Get a progressive hint for a Halloween Hack challenge. Usage: /hack:hint <1|2|3|4>"
+prompt = """
+I'm working on Challenge {{args}} of the Haunted Kiosk lab.
+
+1. Read the matching doc in docs/ (04-07) and the file with the TODO for that challenge
+   (1: src/lib/firebase.ts, 2: src/lib/promptExpansion.ts, 3: src/lib/avatar.ts, 4: server/omni.ts).
+2. Look at what I've written so far in that file.
+3. Give me ONE short hint (max 4 lines) that gets me unstuck. Do not paste the full solution
+   and do not open the solutions/ folder.
+4. End with: "Want the next hint? Run /hack:hint {{args}} again — or /hack:solve {{args}} to see the answer."
+"""

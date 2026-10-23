@@ -1,0 +1,7 @@
+description = "Explain how the Haunted Kiosk pipeline works end to end."
+prompt = """
+Using @{src/lib/pipeline.ts} @{api/video/start.ts} @{api/video/status.ts} and GEMINI.md, explain the full
+flow from selfie to video as a numbered list, then draw it as a Mermaid sequence diagram
+(Browser, Firebase Auth, Firebase Storage, Firebase AI Logic, Vercel Function, Gemini Omni).
+Point out which line of code belongs to which challenge.
+"""

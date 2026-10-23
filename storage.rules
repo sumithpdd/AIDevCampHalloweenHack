@@ -1,0 +1,26 @@
+rules_version = '2';
+
+// 🎃 Halloween Hack — Firebase Storage rules
+// Layout:  ghouls/{uid}/{jobId}/selfie.jpg | avatar.png | video.mp4
+//  - Each (anonymous) user can only read & write inside their own folder.
+//  - The browser may only upload images (max 10 MB).
+//  - video.mp4 is written by the Vercel function with the Admin SDK (bypasses rules).
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /ghouls/{uid}/{jobId}/{fileName} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+
+      allow delete: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Everything else is locked.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

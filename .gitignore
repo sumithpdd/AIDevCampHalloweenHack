@@ -1,0 +1,17 @@
+node_modules
+dist
+.vercel
+.env
+.env.local
+.env.*.local
+*.log
+service-account*.json
+*service*account*.json
+.firebase
+.firebaserc
+firebase-debug.log
+# never commit credentials
+*.pem
+*.p12
+*-key.json
+credentials*.json

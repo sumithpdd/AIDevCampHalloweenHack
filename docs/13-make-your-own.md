@@ -1,0 +1,47 @@
+# Bonus · Make your own — reskin the booth
+
+> 🎁 **Bonus** — after the core codelab ([11 steps](../README.md#codelab-walkthrough))
+
+The pipeline (upload → brief → portrait → video), anonymous auth, the storage rules and the video poll are the
+reusable part. A new theme only touches prompts, scenes and copy. Ideas: *Formula E driver* (back where it
+started), *Christmas elf*, *1920s jazz club*, *your company's offsite*.
+
+## 13.1 Start from the finished booth
+```bash
+npm run solve -- all
+npm run dev
+```
+
+## 13.2 Edit these files
+
+| Change | File | Tip |
+|---|---|---|
+| Worlds: costume, setting, camera move | `src/lib/scenes.ts` | Keep `motion` as **one continuous 8-second shot**. Omni does best with one camera move. |
+| Art-director rules | `src/lib/briefPrompt.ts` | Keep the identity-preservation and family-friendly rules. Change tone, era and word counts. |
+| Brief fields | `src/lib/briefPrompt.ts` (`GhoulBrief`) + `ghoulBriefSchema` in `promptExpansion.ts` | Rename fields in both places. The schema is the contract. |
+| Portrait wrapper sentence | `src/lib/avatar.ts` (`promptText`) | "Photorealistic", "no text, no watermark" stay useful in any theme. |
+| Video wrapper sentence | `server/omni.ts` (`buildVideoInstruction`) | Replace "Halloween" with your theme. |
+| Title, buttons, stage labels | `src/App.tsx`, `src/components/Progress.tsx`, `index.html` | |
+| Colours, fonts, bats & fog | `src/index.css` | All colours are CSS variables in `:root`. |
+| Favicon | `public/favicon.svg` | |
+| Models | `.env.local` → `VITE_PROMPT_MODEL`, `VITE_IMAGE_MODEL`, `OMNI_MODEL` | |
+
+Gemini CLI can do most of this for you:
+
+```text
+> Reskin this booth as a "Formula E Gen4 driver" experience. Update scenes.ts with 4 scenes,
+  rewrite buildBriefInstruction for racing, rename the UI copy, and switch the palette in index.css
+  to electric blue. Do not change pipeline.ts, storage.rules or anything in api/.
+```
+
+## 13.3 Leave these alone
+- `src/lib/pipeline.ts` stage order and error handling
+- `storage.rules`, `server/firebaseAdmin.ts`, `api/video/*`
+- App Check setup in `src/lib/firebase.ts`
+
+## 13.4 If you also want the reskin as the codelab
+Copy your finished challenge files into `solutions/`, then copy them into `starter/` and cut the TODO gaps back in,
+the way the Halloween starters do. `npm run reset-challenges` and `npm run solve` keep working.
+
+---
+[📋 All steps](../README.md#codelab-walkthrough) · [Hack extensions](10-hack-extensions.md) · [Troubleshooting](11-troubleshooting.md)

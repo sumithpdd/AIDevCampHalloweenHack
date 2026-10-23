@@ -1,0 +1,9 @@
+description = "Typecheck the project and explain any errors in plain English."
+prompt = """
+Here is the output of the TypeScript check:
+
+!{npm run typecheck}
+
+If it passed, say so and tell me which challenges still contain a `ChallengeTodo` throw
+(search src/lib/*.ts and server/omni.ts). If it failed, explain each error and propose the smallest fix.
+"""
