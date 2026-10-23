@@ -84,7 +84,7 @@ FIREBASE_SERVICE_ACCOUNT_BASE64=<one-line base64 of the JSON>
 FIREBASE_STORAGE_BUCKET=haunted-kiosk-xyz.firebasestorage.app
 ```
 
-3. Delete or move the JSON file out of the repo (`service-account*.json` is git-ignored, but don't tempt fate).
+3. Move the JSON file **out of this folder** (for example into your home directory). `.gitignore` skips `*service*account*.json`, and `.vercelignore` does too, because a `vercel` upload can still pack a gitignored file. The app only needs the base64 line in `.env.local`.
 
 ## 2.7 Gemini API key for Gemini Omni (server only)
 1. Open [Google AI Studio → API keys](https://aistudio.google.com/apikey) → **Create API key** → choose your Firebase

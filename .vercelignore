@@ -1,0 +1,9 @@
+# The CLI upload can include a gitignored key file. Keep credentials off the deployment.
+.env
+.env.*
+*service*account*.json
+*service account*.json
+*.pem
+*.p12
+*-key.json
+credentials*.json
