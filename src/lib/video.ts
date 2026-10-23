@@ -1,5 +1,6 @@
 import { auth } from './firebase';
 import type { Orientation } from './avatar';
+import type { InteractionUsage } from './usage';
 
 /** Thin client for the Vercel Functions in /api/video/*. */
 async function authedFetch(input: string, init: RequestInit = {}) {
@@ -37,12 +38,12 @@ export async function waitForVideo(
   jobId: string,
   interactionId: string,
   { intervalMs = 5000, timeoutMs = 10 * 60_000, onTick }: { intervalMs?: number; timeoutMs?: number; onTick?: (elapsedS: number) => void } = {},
-): Promise<string> {
+): Promise<{ videoUrl: string; usage?: InteractionUsage }> {
   const started = Date.now();
   while (Date.now() - started < timeoutMs) {
     const q = new URLSearchParams({ jobId, interactionId });
     const res = await authedFetch(`/api/video/status?${q}`);
-    if (res.status === 'completed') return res.videoUrl as string;
+    if (res.status === 'completed') return { videoUrl: res.videoUrl as string, usage: res.usage as InteractionUsage | undefined };
     if (res.status === 'failed') throw new Error(res.error ?? 'Video generation failed');
     onTick?.(Math.round((Date.now() - started) / 1000));
     await new Promise((r) => setTimeout(r, intervalMs));

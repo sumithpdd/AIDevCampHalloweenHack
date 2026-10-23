@@ -6,7 +6,7 @@ re-imagining of Google's *Formula E GenMedia* codelab (which used Python/FastAPI
 
 ## Hard rules
 - **No Python, no FastAPI, no Docker.** TypeScript only: React (Vite) in the browser, Vercel Functions in `/api`.
-- `GEMINI_API_KEY` and `FIREBASE_SERVICE_ACCOUNT_BASE64` are **server-only**. Never import `server/*` from `src/*`,
+- `GEMINI_API_KEY`, `FIREBASE_SERVICE_ACCOUNT_BASE64` and `ADMIN_SECRET` are **server-only**. Never import `server/*` from `src/*`,
   never prefix secrets with `VITE_`.
 - Browser AI calls go through **Firebase AI Logic** (`firebase/ai`), not `@google/genai`.
 - Gemini Omni (video) goes through the **Interactions API** with `@google/genai` on the server, `background: true`.
@@ -21,7 +21,12 @@ re-imagining of Google's *Formula E GenMedia* codelab (which used Python/FastAPI
 | `src/lib/promptExpansion.ts` | **Challenge 2** – `gemini-3.8-flash` prompt expansion → JSON `GhoulBrief` |
 | `src/lib/avatar.ts` | **Challenge 3** – Nano Banana 2 (`gemini-3.1-flash-image`) image-to-image |
 | `server/omni.ts` | **Challenge 4** – Gemini Omni 1.1 Flash: 4a `startOmniVideo`, 4b `checkOmniVideo` |
-| `src/lib/pipeline.ts` | Orchestrates the 4 stages in the browser |
+| `src/lib/pipeline.ts` | Orchestrates the stages in the browser (upload → brief → avatar → video → logos, caption in parallel) |
+| `src/data/backgrounds.ts`, `prompts.ts`, `booth-scenes.ts` | Curated scenes (backdrop × character) |
+| `src/lib/branding.ts`, `watermark.ts`, `print.ts` | Event logos on photo + video (canvas/MediaRecorder), postcard print |
+| `src/lib/caption.ts`, `social-posts-storage.ts`, `share.ts` | AI caption + hashtags, saved captions per email (localStorage), sharing |
+| `src/lib/usage.ts` | Token counts per generation |
+| `src/admin/AdminPage.tsx`, `api/admin/*`, `server/adminAuth.ts` | `/admin` (ADMIN_SECRET → signed token; list/delete jobs) |
 | `api/video/start.ts`, `api/video/status.ts` | Vercel Functions (Web `Request`/`Response` handlers) |
 | `vite.config.ts` | Runs `/api/*` locally during `npm run dev` |
 | `starter/`, `solutions/` | Pristine TODO files and reference solutions |

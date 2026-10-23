@@ -25,6 +25,7 @@ What is safe to be public, and what is not:
 | `VITE_APPCHECK_DEBUG_TOKEN` | ❌ **no** | Localhost only. Never set it on Vercel. Delete it in the console if it leaks. |
 | `GEMINI_API_KEY` | ❌ **no** | Server only, no `VITE_` prefix. |
 | `FIREBASE_SERVICE_ACCOUNT_BASE64` / the JSON file | ❌ **no** | Full admin access to your project. |
+| `ADMIN_SECRET` | ❌ **no** | Password for `/admin`. Server only, 16+ random characters. |
 
 `.gitignore` already excludes `.env.local`, `*service*account*.json`, `.firebaserc` and `.vercel`.
 
@@ -76,7 +77,10 @@ vercel --prod
    (and any custom domain). Without it, anonymous sign-in fails in production.
 2. **reCAPTCHA Enterprise site key → Domains**: add the same domain. Without it, App Check returns `401` on the
    brief stage.
-3. Redeploy if you changed any env var (Vercel → Deployments → ⋯ → Redeploy).
+3. **Storage CORS**: put the Vercel domain in `storage.cors.json` → `origin`, then run
+   `gcloud storage buckets update gs://<bucket> --cors-file=storage.cors.json` (needed for logo-branded videos).
+4. Open `https://<project>.vercel.app/admin` and log in with `ADMIN_SECRET`.
+5. Redeploy if you changed any env var (Vercel → Deployments → ⋯ → Redeploy).
 
 ## 9.5 Experience the kiosk
 > Formula E codelab section 6, "Testing & Experiencing", on your phone.

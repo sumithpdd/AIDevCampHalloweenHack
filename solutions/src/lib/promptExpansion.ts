@@ -5,6 +5,7 @@ import { buildBriefInstruction, type GhoulBrief } from './briefPrompt';
 import type { InlineImage } from './media';
 import type { Scene } from './scenes';
 import { ChallengeTodo } from './todo';
+import { recordUsage } from './usage';
 
 /** JSON schema Gemini must follow — Firebase AI Logic "structured output". */
 const ghoulBriefSchema = Schema.object({
@@ -39,6 +40,7 @@ export async function expandPrompt(selfie: InlineImage, scene: Scene): Promise<G
     { type: 'inlineData', inlineData: { data: selfie.base64, mimeType: selfie.mimeType } },
   ]);
 
+  recordUsage('brief', result.response.usageMetadata); // 🔢 token count shown in the UI
   return JSON.parse(result.response.text()) as GhoulBrief;
 }
 

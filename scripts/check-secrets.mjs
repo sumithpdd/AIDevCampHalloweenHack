@@ -38,7 +38,7 @@ const PATTERNS = [
   ['GitHub token', /gh[pousr]_[0-9A-Za-z]{30,}/],
   ['Vercel token', /\bvercel_[0-9A-Za-z]{20,}/i],
   ['Base64 service account', /ewogICJ0eXBlIjogInNlcnZpY2VfYWNjb3VudC|eyJ0eXBlIjoic2VydmljZV9hY2NvdW50/],
-  ['Filled-in secret env var', /^(GEMINI_API_KEY|FIREBASE_SERVICE_ACCOUNT_BASE64|VITE_APPCHECK_DEBUG_TOKEN)=[^<\s]\S*/m],
+  ['Filled-in secret env var', /^(GEMINI_API_KEY|FIREBASE_SERVICE_ACCOUNT_BASE64|VITE_APPCHECK_DEBUG_TOKEN|ADMIN_SECRET)=[^<\s]\S*/m],
 ];
 
 const problems = [];

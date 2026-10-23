@@ -38,7 +38,7 @@ Try `/memory show` to see that `GEMINI.md` was loaded.
 | `/hack:solve 2` | Shows & explains the reference solution, compares it with your code (won't overwrite unless you say "apply it") |
 | `/hack:check` | Runs `npm run typecheck` and explains errors in plain English |
 | `/hack:explain` | Walks through the whole pipeline + draws a Mermaid diagram |
-| `/hack:scene a werewolf on the Northern line` | Invents and adds a new scene to `src/lib/scenes.ts` |
+| `/hack:scene a werewolf on the Northern line` | Invents and adds a new curated scene to `src/data/` (backdrop, character, pairing) |
 | `/hack:deploy` | Pre-flight checklist + exact Vercel commands |
 
 ## 3.4 Good prompts for this lab

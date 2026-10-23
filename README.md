@@ -22,11 +22,27 @@ You can follow the lab with the TODOs left in, or drop in the finished answers a
  └──────────────────────────────────────────────┘
 ```
 
+## Event-booth features
+
+On top of the four codelab challenges, the app is ready for a real event booth. The
+[Advanced level](docs/14-advanced-level.md) guide walks through each one.
+
+| | |
+|---|---|
+| 🎬 **Curated scenes, 4-step flow** | You → Scene → Details → Result. `src/data/booth-scenes.ts` pairs a backdrop with a character; **Mix your own** for any combination |
+| 💧 **Event logos on photo *and* video** | AI DevCamp 2026 + GDG London logos burned in by the browser (canvas + MediaRecorder, no ffmpeg) |
+| ✍️ **AI caption + hashtags** | Gemini 3.8 Flash writes the post. `#AIDevCamp #GDGLondon #BuildWithAI #BuildWithGemini #HalloweenHack` are always included |
+| 💾 **Saved captions per email** | Reuse earlier captions without another Gemini call. Stored in this browser only |
+| 📣 **Share & 🖨️ print** | Web Share with files, LinkedIn / X / Bluesky / WhatsApp, downloads, 100×148 mm postcard print |
+| 🔢 **Token count per generation** | Brief, avatar, caption and video. In / out / thinking / total, plus the grand total |
+| 🛡️ **Admin area** (`/admin`) | `ADMIN_SECRET` login → every ghoul with photo, video, caption and tokens. Delete any of them |
+| 🗑️ **Delete my photos** | Guests can wipe their own files from the result screen |
+
 ## The ideas
 
 Read [docs/00-overview.md](docs/00-overview.md) for the full walkthrough. These six ideas are the whole app.
 
-**One photo, three jobs.** A scene is a short recipe: costume, place, and camera move (`src/lib/scenes.ts`).
+**One photo, three jobs.** A scene is a short recipe: costume, place, and camera move (`src/data/booth-scenes.ts` pairs a backdrop from `backgrounds.ts` with a character from `prompts.ts`).
 Gemini 3.8 Flash looks at the face and expands that recipe into a name, an image prompt, and a video prompt.
 Nano Banana 2 (`gemini-3.1-flash-image`) paints the portrait. Gemini Omni animates the portrait. Each model
 does the job it is good at. The brief is the contract between them.
@@ -62,7 +78,8 @@ The recipe is [docs/13-make-your-own.md](docs/13-make-your-own.md).
 
 | You want to change… | Edit |
 |---|---|
-| Characters, places, camera moves | `src/lib/scenes.ts` |
+| Event name, logos, hashtags | `src/lib/branding.ts`, `public/branding/` |
+| Backdrops, characters, curated pairs | `src/data/backgrounds.ts`, `prompts.ts`, `booth-scenes.ts` |
 | The art-director rules (tone, identity, length) | `src/lib/briefPrompt.ts` |
 | The one-line instruction wrapped around the portrait prompt | `src/lib/avatar.ts` |
 | Titles, button, stage names | `src/App.tsx`, `src/components/Progress.tsx`, `index.html` |
@@ -99,6 +116,8 @@ The app runs from the start: each AI stage stops with **"Challenge N is still a 
 | 10 | [Push & deploy](docs/09-deploy-vercel.md) | 15 min | 5 · Deploying + 6 · Testing | Secret scan, GitHub, Vercel, try it on your phone |
 | 11 | [Conclusion & clean-up](docs/12-cleanup.md) | 5 min | 7 · Conclusion | Recap, rotate keys, delete resources |
 
+**Advanced level:** [From codelab to event booth](docs/14-advanced-level.md) (curated scenes, logos on video, captions, sharing, printing, tokens, admin)
+
 **Bonus:** [Hack extensions](docs/10-hack-extensions.md) · [Make your own theme](docs/13-make-your-own.md) ·
 [Troubleshooting](docs/11-troubleshooting.md)
 
@@ -124,7 +143,7 @@ that way.
 |---|---|---|
 | `VITE_FIREBASE_*`, `VITE_RECAPTCHA_ENTERPRISE_SITE_KEY` | `.env.local` / Vercel | Public by design (shipped to the browser) |
 | `VITE_APPCHECK_DEBUG_TOKEN` | `.env.local` only | **Secret.** Used only by `npm run dev`; stripped from production builds |
-| `GEMINI_API_KEY`, `FIREBASE_SERVICE_ACCOUNT_BASE64` | `.env.local` / Vercel | **Secret.** Server only, never prefixed `VITE_` |
+| `GEMINI_API_KEY`, `FIREBASE_SERVICE_ACCOUNT_BASE64`, `ADMIN_SECRET` | `.env.local` / Vercel | **Secret.** Server only, never prefixed `VITE_` |
 | Service-account JSON | your disk, then delete it | **Secret.** Git-ignored (`*service*account*.json`) |
 
 ## Stack
@@ -151,8 +170,13 @@ src/lib/firebase.ts       Challenge 1 — Firebase AI Logic client
 src/lib/promptExpansion.ts Challenge 2 — JSON brief
 src/lib/avatar.ts         Challenge 3 — portrait
 src/lib/briefPrompt.ts    Art-director instruction (edit this to change voice)
-src/lib/scenes.ts         Themes (edit this to add a world)
-src/lib/pipeline.ts       Stage order: upload → brief → portrait → video
+src/data/                 Curated scenes: backgrounds × prompts → booth-scenes
+src/lib/branding.ts       Event name, logos, hashtags
+src/lib/watermark.ts      Logos on photo + video (canvas, MediaRecorder)
+src/lib/caption.ts        AI caption with event hashtags
+src/lib/usage.ts          Token counts per generation
+src/admin/, api/admin/    /admin: list + delete every ghoul
+src/lib/pipeline.ts       Stage order: upload → brief → portrait → video → logos (caption in parallel)
 src/App.tsx, components/  Kiosk UI
 starter/  solutions/      TODO files and reference answers
 scripts/                  solve / reset, secret scan, Vercel build

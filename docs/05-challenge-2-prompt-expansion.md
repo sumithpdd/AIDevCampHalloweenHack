@@ -6,7 +6,7 @@
 > generation_config={"thinking_level": "high", "temperature": 0.2})`
 
 ## The concept
-A scene in `src/lib/scenes.ts` is three short strings: costume, setting, motion. This challenge is the
+A scene (`src/data/booth-scenes.ts`) resolves to three short strings: costume, setting, motion. This challenge is the
 art director. Gemini 3.8 Flash sees those strings **and the selfie** and writes a brief the later models
 can follow. **Structured output** (`responseSchema` plus `application/json`) makes the reply four fields,
 so Challenge 3 reads `avatarPrompt` and Challenge 4 reads `videoPrompt`. Low temperature keeps the
@@ -38,9 +38,10 @@ We go one step further than the Formula E lab: instead of free text we use **str
 ## The gap
 
 ```ts
-const result: { response: { text(): string } } = null as never; // REPLACE THIS LINE
+const result: { response: { text(): string; usageMetadata?: AiLogicUsageMetadata } } = null as never; // REPLACE THIS LINE
 if (!result) throw new ChallengeTodo(2, 'call gemini-3.8-flash with the selfie + scene brief');
 
+recordUsage('brief', result.response.usageMetadata); // 🔢 given — token count for the UI
 return JSON.parse(result.response.text()) as GhoulBrief;
 ```
 
@@ -70,6 +71,7 @@ const result = await model.generateContent([
   { type: 'inlineData', inlineData: { data: selfie.base64, mimeType: selfie.mimeType } },
 ]);
 
+recordUsage('brief', result.response.usageMetadata); // 🔢 given — token count for the UI
 return JSON.parse(result.response.text()) as GhoulBrief;
 ```
 
@@ -79,6 +81,7 @@ return JSON.parse(result.response.text()) as GhoulBrief;
 | `{"type": "image", "bytes": b64, "mime_type": …}` | `{ type: 'inlineData', inlineData: { data: b64, mimeType } }` |
 | `generation_config={"thinking_level": "high"}` | `thinkingConfig: { thinkingLevel: ThinkingLevel.HIGH }` |
 | `interaction.output_text` | `result.response.text()` |
+| (not shown) | `result.response.usageMetadata` → token counts in the UI |
 
 Low `temperature` keeps the description faithful to the photo; `HIGH` thinking lets the model reason about
 costume details before writing. Delete the `void …` lines at the bottom when done.

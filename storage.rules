@@ -1,21 +1,36 @@
 rules_version = '2';
 
-// 🎃 Halloween Hack — Firebase Storage rules
-// Layout:  ghouls/{uid}/{jobId}/selfie.jpg | avatar.png | video.mp4
-//  - Each (anonymous) user can only read & write inside their own folder.
-//  - The browser may only upload images (max 10 MB).
-//  - video.mp4 is written by the Vercel function with the Admin SDK (bypasses rules).
+// 🎃 Haunted Kiosk — Firebase Storage rules
+// Layout:  ghouls/{uid}/{jobId}/
+//   selfie.jpg · avatar.png · avatar-branded.jpg      ← browser (images ≤ 10 MB)
+//   video-branded.mp4 | video-branded.webm             ← browser (logo-burned video ≤ 60 MB)
+//   meta.json                                          ← browser (scene, caption, token counts ≤ 100 KB)
+//   video.mp4                                          ← Vercel function with the Admin SDK (bypasses rules)
+// Each anonymous user can only read, write and delete inside their own folder.
+// The /admin area lists and deletes everything through the Admin SDK on the server.
 service firebase.storage {
   match /b/{bucket}/o {
     match /ghouls/{uid}/{jobId}/{fileName} {
-      allow read: if request.auth != null && request.auth.uid == uid;
+      function isOwner() {
+        return request.auth != null && request.auth.uid == uid;
+      }
+      function isImage() {
+        return request.resource.contentType.matches('image/.*')
+          && request.resource.size < 10 * 1024 * 1024;
+      }
+      function isBrandedVideo() {
+        return fileName.matches('video-branded\\.(mp4|webm)')
+          && request.resource.contentType.matches('video/(mp4|webm)')
+          && request.resource.size < 60 * 1024 * 1024;
+      }
+      function isMeta() {
+        return fileName == 'meta.json'
+          && request.resource.contentType == 'application/json'
+          && request.resource.size < 100 * 1024;
+      }
 
-      allow create, update: if request.auth != null
-        && request.auth.uid == uid
-        && request.resource.size < 10 * 1024 * 1024
-        && request.resource.contentType.matches('image/.*');
-
-      allow delete: if request.auth != null && request.auth.uid == uid;
+      allow read, delete: if isOwner();
+      allow create, update: if isOwner() && (isImage() || isBrandedVideo() || isMeta());
     }
 
     // Everything else is locked.

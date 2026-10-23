@@ -4,6 +4,7 @@ import { MODELS } from './models';
 import type { GhoulBrief } from './briefPrompt';
 import type { InlineImage } from './media';
 import { ChallengeTodo } from './todo';
+import { recordUsage } from './usage';
 
 export type Orientation = '9:16' | '16:9';
 
@@ -38,8 +39,10 @@ export async function generateAvatar(
   // Stuck? docs/06-challenge-3-nano-banana-avatar.md  or  `npm run solve -- 3`
   // =====================================================================
   const imagePart = undefined as { inlineData: { data: string; mimeType: string } } | undefined; // REPLACE THIS LINE
-  const result = { response: { text: () => '' } } as const; // REPLACE THIS LINE (it's the generateContent result)
+  const result = { response: { text: () => '', usageMetadata: undefined } } as const; // REPLACE THIS LINE (it's the generateContent result)
   if (!imagePart) throw new ChallengeTodo(3, 'generate the avatar with gemini-3.1-flash-image');
+
+  recordUsage('avatar', result.response.usageMetadata); // 🔢 token count shown in the UI
 
   if (!imagePart) {
     throw new Error(

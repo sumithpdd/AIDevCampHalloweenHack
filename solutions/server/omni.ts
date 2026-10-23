@@ -24,9 +24,17 @@ export interface OmniStartInput {
   aspectRatio: '9:16' | '16:9';
 }
 
+/** Token usage reported by the Interactions API (shown in the UI). */
+export interface OmniUsage {
+  total_input_tokens?: number;
+  total_output_tokens?: number;
+  total_thought_tokens?: number;
+  total_tokens?: number;
+}
+
 export type OmniStatus =
   | { status: 'in_progress' }
-  | { status: 'completed'; video: { bytes: Buffer; mimeType: string } }
+  | { status: 'completed'; video: { bytes: Buffer; mimeType: string }; usage?: OmniUsage }
   | { status: 'failed'; error: string };
 
 const FAILED = new Set(['failed', 'cancelled', 'incomplete', 'budget_exceeded']);
@@ -75,7 +83,7 @@ export async function checkOmniVideo(interactionId: string): Promise<OmniStatus>
   if (interaction.status === 'completed') {
     const video = interaction.output_video;
     if (!video) return { status: 'failed', error: 'Omni finished but returned no video' };
-    return { status: 'completed', video: await videoToBuffer(video) };
+    return { status: 'completed', video: await videoToBuffer(video), usage: interaction.usage };
   }
   if (FAILED.has(interaction.status)) {
     return { status: 'failed', error: `Omni ${interaction.status}: ${JSON.stringify(interaction.errors ?? [])}` };

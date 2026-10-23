@@ -1,8 +1,10 @@
 description = "Invent and add a new Halloween scene. Usage: /hack:scene <idea>"
 prompt = """
-Add a new entry to the SCENES array in src/lib/scenes.ts based on this idea: {{args}}
+Add a new curated booth scene based on this idea: {{args}}
 
-Follow the existing shape (id, emoji, title, costume, setting, motion). Keep it spooky but family-friendly,
+1. If needed, add a backdrop to src/data/backgrounds.ts (id, name, emoji, description, preview CSS gradient, category).
+2. If needed, add a character to src/data/prompts.ts (id, title, emoji, costume, motion).
+3. Pair them in src/data/booth-scenes.ts (id, title, description, emoji, backgroundId, promptId, category). Keep it spooky but family-friendly,
 make `motion` a single continuous 8-second camera move, and if possible give it a London twist.
 Then run `npm run typecheck`.
 """

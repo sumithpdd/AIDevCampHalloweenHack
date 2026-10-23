@@ -4,6 +4,7 @@ import { MODELS } from './models';
 import type { GhoulBrief } from './briefPrompt';
 import type { InlineImage } from './media';
 import { ChallengeTodo } from './todo';
+import { recordUsage } from './usage';
 
 export type Orientation = '9:16' | '16:9';
 
@@ -38,6 +39,8 @@ export async function generateAvatar(
   ]);
 
   const imagePart = result.response.inlineDataParts()?.[0];
+
+  recordUsage('avatar', result.response.usageMetadata); // 🔢 token count shown in the UI
 
   if (!imagePart) {
     throw new Error(

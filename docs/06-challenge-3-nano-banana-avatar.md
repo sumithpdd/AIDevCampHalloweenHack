@@ -25,7 +25,7 @@ Gemini Omni animates in Challenge 4.
 
 ```ts
 const imagePart = undefined as { inlineData: { data: string; mimeType: string } } | undefined; // REPLACE THIS LINE
-const result = { response: { text: () => '' } } as const; // REPLACE THIS LINE (it's the generateContent result)
+const result = { response: { text: () => '', usageMetadata: undefined } } as const; // REPLACE THIS LINE (it's the generateContent result)
 if (!imagePart) throw new ChallengeTodo(3, 'generate the avatar with gemini-3.1-flash-image');
 ```
 
@@ -54,6 +54,7 @@ const result = await model.generateContent([
 ]);
 
 const imagePart = result.response.inlineDataParts()?.[0];
+// (given, below the gap) recordUsage('avatar', result.response.usageMetadata) — 🔢 tokens for the UI
 ```
 
 - Passing the **selfie as a part** is what makes it image-to-image — Nano Banana keeps the face and changes the rest.

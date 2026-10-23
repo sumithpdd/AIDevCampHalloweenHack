@@ -144,6 +144,24 @@ VITE_APPCHECK_DEBUG_TOKEN=<the UUID you just generated>
 
 Official guide: [App Check for Firebase AI Logic](https://firebase.google.com/docs/ai-logic/app-check).
 
+## 2.9 Storage CORS (for the logo-branded video)
+The booth burns the event logos into the Omni video **in the browser**, so the browser must be allowed to download
+the video from Firebase Storage. Edit `storage.cors.json` (exact origins only, no wildcards) and apply it once:
+
+```bash
+gcloud storage buckets update gs://<your-bucket> --cors-file=storage.cors.json
+```
+
+Skipped it? Everything still works. The "Add event logos" stage just says *Skipped*, and the logos are overlaid in the
+page instead of burned into the file. Details: [Advanced level §2](14-advanced-level.md#2-logo-watermark-on-the-photo-and-the-video).
+
+## 2.10 Admin password
+Add a long random `ADMIN_SECRET` to `.env.local` (server only, no `VITE_`) to turn on the `/admin` page:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(24).toString('base64url'))"
+```
+
 ## ✅ Checkpoint
 ```bash
 npm run dev

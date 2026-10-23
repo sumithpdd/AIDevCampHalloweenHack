@@ -17,7 +17,7 @@ ask you to fill the Gemini calls inside them.
 
 ### A scene is a recipe, a brief is a script
 
-`src/lib/scenes.ts` stores three strings per world: **costume** (who they become), **setting** (where),
+A scene (`src/data/booth-scenes.ts` = backdrop × character) resolves to three strings: **costume** (who they become), **setting** (where),
 and **motion** (what the camera and the character do for 8 seconds). That is deliberately short.
 `buildBriefInstruction()` in `src/lib/briefPrompt.ts` hands the recipe and the selfie to Gemini 3.8 Flash
 and asks for a **brief**:

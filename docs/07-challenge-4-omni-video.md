@@ -83,7 +83,8 @@ throw new ChallengeTodo(4, 'poll the Omni interaction with interactions.get() (4
 Hints:
 1. `await getGenAI().interactions.get(interactionId)`
 2. `interaction.status` is one of `in_progress`, `completed`, `failed`, `cancelled`, … (`FAILED` is a `Set` of the bad ones).
-3. The video is in `interaction.output_video` — either inline base64 `data` or a `uri`. The given helper
+3. Include `usage: interaction.usage` in the completed result. The UI shows it as the video's token count.
+4. The video is in `interaction.output_video` — either inline base64 `data` or a `uri`. The given helper
    `videoToBuffer()` handles both.
 
 <details>
@@ -95,7 +96,7 @@ const interaction = await getGenAI().interactions.get(interactionId);
 if (interaction.status === 'completed') {
   const video = interaction.output_video;
   if (!video) return { status: 'failed', error: 'Omni finished but returned no video' };
-  return { status: 'completed', video: await videoToBuffer(video) };
+  return { status: 'completed', video: await videoToBuffer(video), usage: interaction.usage }; // 🔢 tokens
 }
 if (FAILED.has(interaction.status)) {
   return { status: 'failed', error: `Omni ${interaction.status}: ${JSON.stringify(interaction.errors ?? [])}` };

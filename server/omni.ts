@@ -24,9 +24,17 @@ export interface OmniStartInput {
   aspectRatio: '9:16' | '16:9';
 }
 
+/** Token usage reported by the Interactions API (shown in the UI). */
+export interface OmniUsage {
+  total_input_tokens?: number;
+  total_output_tokens?: number;
+  total_thought_tokens?: number;
+  total_tokens?: number;
+}
+
 export type OmniStatus =
   | { status: 'in_progress' }
-  | { status: 'completed'; video: { bytes: Buffer; mimeType: string } }
+  | { status: 'completed'; video: { bytes: Buffer; mimeType: string }; usage?: OmniUsage }
   | { status: 'failed'; error: string };
 
 const FAILED = new Set(['failed', 'cancelled', 'incomplete', 'budget_exceeded']);
@@ -46,24 +54,17 @@ export function buildVideoInstruction(prompt: string): string {
  */
 export async function startOmniVideo({ prompt, image, aspectRatio }: OmniStartInput): Promise<string> {
   // =====================================================================
-  // 🎃 TODO — Challenge 4a: start async video generation with Gemini Omni
-  // ---------------------------------------------------------------------
-  // Call getGenAI().interactions.create({ … }) with:
-  //   model:           OMNI_MODEL
-  //   input:           [ { type: 'image', data: image.base64, mime_type: image.mimeType },
-  //                      { type: 'text',  text: buildVideoInstruction(prompt) } ]
-  //   response_format: { type: 'video', aspect_ratio: aspectRatio, resolution: '720p' }
-  //   background:      true          👈 don't block the serverless function!
-  // Store the result in `interaction` — we return interaction.id.
-  //
-  // Stuck? docs/07-challenge-4-omni-video.md  or  `npm run solve -- 4`
+  // ✅ SOLUTION — Challenge 4a
   // =====================================================================
-  const interaction = undefined as { id: string } | undefined; // REPLACE THIS LINE
-  if (!interaction) throw new ChallengeTodo(4, 'start a background Gemini Omni interaction (4a)');
-  void buildVideoInstruction;
-  void prompt;
-  void image;
-  void aspectRatio;
+  const interaction = await getGenAI().interactions.create({
+    model: OMNI_MODEL,
+    input: [
+      { type: 'image', data: image.base64, mime_type: image.mimeType },
+      { type: 'text', text: buildVideoInstruction(prompt) },
+    ],
+    response_format: { type: 'video', aspect_ratio: aspectRatio, resolution: '720p' },
+    background: true,
+  });
 
   return interaction.id;
 }
@@ -75,19 +76,19 @@ export async function startOmniVideo({ prompt, image, aspectRatio }: OmniStartIn
  */
 export async function checkOmniVideo(interactionId: string): Promise<OmniStatus> {
   // =====================================================================
-  // 🎃 TODO — Challenge 4b: check the background interaction
-  // ---------------------------------------------------------------------
-  // 1. const interaction = await getGenAI().interactions.get(interactionId)
-  // 2. status === 'completed'  → return { status: 'completed',
-  //                                      video: await videoToBuffer(interaction.output_video) }
-  //    status in FAILED        → return { status: 'failed', error: … }
-  //    otherwise               → return { status: 'in_progress' }
-  //
-  // Stuck? docs/07-challenge-4-omni-video.md  or  `npm run solve -- 4`
+  // ✅ SOLUTION — Challenge 4b
   // =====================================================================
-  void interactionId;
-  void FAILED;
-  throw new ChallengeTodo(4, 'poll the Omni interaction with interactions.get() (4b)');
+  const interaction = await getGenAI().interactions.get(interactionId);
+
+  if (interaction.status === 'completed') {
+    const video = interaction.output_video;
+    if (!video) return { status: 'failed', error: 'Omni finished but returned no video' };
+    return { status: 'completed', video: await videoToBuffer(video), usage: interaction.usage };
+  }
+  if (FAILED.has(interaction.status)) {
+    return { status: 'failed', error: `Omni ${interaction.status}: ${JSON.stringify(interaction.errors ?? [])}` };
+  }
+  return { status: 'in_progress' };
 }
 
 /** Helper (given): turn an Omni video block (inline base64 OR uri) into bytes. */
@@ -106,3 +107,4 @@ export async function videoToBuffer(video: {
   throw new Error('Omni video block had neither data nor uri');
 }
 
+void ChallengeTodo;

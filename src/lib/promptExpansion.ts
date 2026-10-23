@@ -5,6 +5,7 @@ import { buildBriefInstruction, type GhoulBrief } from './briefPrompt';
 import type { InlineImage } from './media';
 import type { Scene } from './scenes';
 import { ChallengeTodo } from './todo';
+import { recordUsage } from './usage';
 
 /** JSON schema Gemini must follow — Firebase AI Logic "structured output". */
 const ghoulBriefSchema = Schema.object({
@@ -22,32 +23,25 @@ const ghoulBriefSchema = Schema.object({
  */
 export async function expandPrompt(selfie: InlineImage, scene: Scene): Promise<GhoulBrief> {
   // =====================================================================
-  // 🎃 TODO — Challenge 2: expand the selfie into a full Halloween brief
-  // ---------------------------------------------------------------------
-  // 1. Create a model with getGenerativeModel(getHalloweenAI(), { … })
-  //      model:            MODELS.prompt            ("gemini-3.8-flash")
-  //      generationConfig: temperature 0.2,
-  //                        thinkingConfig { thinkingLevel: ThinkingLevel.HIGH },
-  //                        responseMimeType 'application/json',
-  //                        responseSchema ghoulBriefSchema
-  // 2. Call model.generateContent([...]) with TWO parts (firebase v13 parts need a `type`):
-  //      { type: 'text', text: buildBriefInstruction(scene) }
-  //      { type: 'inlineData', inlineData: { data: selfie.base64, mimeType: selfie.mimeType } }
-  // 3. Keep the result in a const called `result` — the return line below
-  //    parses result.response.text() as JSON.
-  //
-  // Stuck? docs/05-challenge-2-prompt-expansion.md  or  `npm run solve -- 2`
+  // ✅ SOLUTION — Challenge 2
   // =====================================================================
-  const result: { response: { text(): string } } = null as never; // REPLACE THIS LINE
-  if (!result) throw new ChallengeTodo(2, 'call gemini-3.8-flash with the selfie + scene brief');
+  const model = getGenerativeModel(getHalloweenAI(), {
+    model: MODELS.prompt,
+    generationConfig: {
+      temperature: 0.2,
+      thinkingConfig: { thinkingLevel: ThinkingLevel.HIGH },
+      responseMimeType: 'application/json',
+      responseSchema: ghoulBriefSchema,
+    },
+  });
 
+  const result = await model.generateContent([
+    { type: 'text', text: buildBriefInstruction(scene) },
+    { type: 'inlineData', inlineData: { data: selfie.base64, mimeType: selfie.mimeType } },
+  ]);
+
+  recordUsage('brief', result.response.usageMetadata); // 🔢 token count shown in the UI
   return JSON.parse(result.response.text()) as GhoulBrief;
 }
 
-// Silence 'unused' warnings until you solve the challenge.
-void getGenerativeModel;
-void ThinkingLevel;
-void ghoulBriefSchema;
-void MODELS;
-void getHalloweenAI;
-void buildBriefInstruction;
+void ChallengeTodo;

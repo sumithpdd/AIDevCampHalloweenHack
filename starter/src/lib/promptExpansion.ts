@@ -5,6 +5,7 @@ import { buildBriefInstruction, type GhoulBrief } from './briefPrompt';
 import type { InlineImage } from './media';
 import type { Scene } from './scenes';
 import { ChallengeTodo } from './todo';
+import { recordUsage, type AiLogicUsageMetadata } from './usage';
 
 /** JSON schema Gemini must follow — Firebase AI Logic "structured output". */
 const ghoulBriefSchema = Schema.object({
@@ -38,9 +39,10 @@ export async function expandPrompt(selfie: InlineImage, scene: Scene): Promise<G
   //
   // Stuck? docs/05-challenge-2-prompt-expansion.md  or  `npm run solve -- 2`
   // =====================================================================
-  const result: { response: { text(): string } } = null as never; // REPLACE THIS LINE
+  const result: { response: { text(): string; usageMetadata?: AiLogicUsageMetadata } } = null as never; // REPLACE THIS LINE
   if (!result) throw new ChallengeTodo(2, 'call gemini-3.8-flash with the selfie + scene brief');
 
+  recordUsage('brief', result.response.usageMetadata); // 🔢 token count shown in the UI
   return JSON.parse(result.response.text()) as GhoulBrief;
 }
 

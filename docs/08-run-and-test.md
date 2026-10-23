@@ -17,6 +17,7 @@
 | `pollJob()` in `App.tsx` | `waitForVideo()` in `src/lib/video.ts` | The 5-second polling loop, in the browser. |
 | `App.tsx` (camera, upload, select) | `src/App.tsx`, `src/components/PhotoInput.tsx`, `Progress.tsx` | Camera or upload, scene grid, orientation, four-stage progress, results. |
 | `index.css` (Formula E brand) | `src/index.css` | The Halloween theme. |
+| (not in the Formula E lab) | `src/data/*`, `watermark.ts`, `caption.ts`, `src/admin/` | Event-booth extras: curated scenes, logos, captions, sharing, printing, tokens, admin. See [Advanced level](14-advanced-level.md). |
 | `Dockerfile`, `nginx.conf` | `vite.config.ts`, `vercel.json` | No containers. During `npm run dev`, a small Vite plugin runs `/api/*` locally; Vercel runs the same files in production. |
 
 Ask Gemini CLI for the guided version: `/hack:explain`.
@@ -38,6 +39,7 @@ npm run dev           # http://localhost:5173
 | 🎃 Write the ghoul brief | `gemini-3.8-flash` (thinking: high) | 5–15 s |
 | 🎃 Render the avatar | Nano Banana 2 `gemini-3.1-flash-image` | 10–30 s |
 | 🎃 Animate the video | Gemini Omni 1.1 Flash | 30–120 s |
+| 🎃 Add event logos | Canvas + MediaRecorder in the browser | ≈ clip length (8 s) |
 
 4. Open **Firebase console → Storage → ghouls/** and find the three files for your job.
 

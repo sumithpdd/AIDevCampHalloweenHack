@@ -52,20 +52,14 @@ export const auth = getAuth(app);
 export const storage = getStorage(app);
 
 // =====================================================================
-// 🎃 TODO — Challenge 1: create the Firebase AI Logic client
-// ---------------------------------------------------------------------
+// ✅ SOLUTION — Challenge 1: create the Firebase AI Logic client
 // Firebase AI Logic lets the browser call Gemini directly — no Python,
-// no FastAPI, and no Gemini API key shipped in your bundle.
-//
-//   • Use getAI() from 'firebase/ai'
-//   • Pass the firebaseApp and { backend: new GoogleAIBackend() }
-//     (Gemini Developer API backend — the one you enabled in the console)
-//
-// Stuck? docs/04-challenge-1-firebase-ai-logic.md  or  `npm run solve -- 1`
+// no FastAPI, no API key in your bundle. The Gemini Developer API
+// backend (GoogleAIBackend) is free-tier friendly; swap to
+// AgentPlatformBackend('global') to use Vertex AI / Gemini Enterprise instead.
 // =====================================================================
 function createAI(firebaseApp: FirebaseApp): AI {
-  // REPLACE THIS LINE WITH YOUR CODE
-  throw new ChallengeTodo(1, 'create the Firebase AI Logic client with getAI() + GoogleAIBackend');
+  return getAI(firebaseApp, { backend: new GoogleAIBackend() });
 }
 
 let aiInstance: AI | undefined;
@@ -82,6 +76,5 @@ export async function ensureSignedIn(): Promise<User> {
   return cred.user;
 }
 
-// Silence 'unused' warnings until you solve the challenge.
-void getAI;
-void GoogleAIBackend;
+// Keeps the import used in both starter and solution files.
+void ChallengeTodo;
