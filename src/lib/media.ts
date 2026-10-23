@@ -26,7 +26,7 @@ export const toDataUrl = ({ base64, mimeType }: InlineImage) => `data:${mimeType
  * Downscale big phone photos before sending them to Gemini — faster, cheaper,
  * and keeps Storage uploads well under the 10 MB rule.
  */
-export async function downscaleImage(file: Blob, maxSide = 1280): Promise<Blob> {
+export async function downscaleImage(file: Blob, maxSide = 1920): Promise<Blob> {
   const bitmap = await createImageBitmap(file);
   const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
   const canvas = document.createElement('canvas');

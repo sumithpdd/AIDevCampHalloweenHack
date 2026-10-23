@@ -27,7 +27,7 @@
 | Vercel shows "Challenge N is still a TODO" | Repo ships the TODO version | Set `DEPLOY_WITH_SOLUTIONS=true` in Vercel env vars, or solve the challenges and push |
 | "Add event logos" stage says *Skipped: Failed to fetch* | Bucket has no CORS rule for this origin | Apply `storage.cors.json` with your exact origin ([02 §2.9](02-firebase-setup.md#29-storage-cors-for-the-logo-branded-video)) |
 | `storage/unauthorized` when saving `video-branded.*` or `meta.json` | Old storage rules | `npm run firebase:deploy-rules` |
-| `/admin` → `Admin is disabled` | `ADMIN_SECRET` missing or < 16 chars | Set it in `.env.local` / Vercel env, restart / redeploy |
+| `/admin` → `Admin is disabled` | `ADMIN_SECRET` missing or shorter than 6 characters | Set it in `.env.local` / Vercel env, restart / redeploy |
 | `/admin` → 404 on Vercel | SPA rewrite missing | Keep the `rewrites` block in `vercel.json` |
 | Branded video is WebM, not MP4 | Browser's MediaRecorder can't write MP4 (Firefox, older Safari) | Use Chrome/Edge on the kiosk; WebM still plays and shares |
 | Saved captions vanished | They live in this browser only (localStorage) | Use the same device + email; private windows don't keep them |

@@ -9,7 +9,7 @@ const TTL_MS = 8 * 60 * 60 * 1000; // 8 hours
 
 function secret(): string {
   const s = process.env.ADMIN_SECRET?.trim();
-  if (!s || s.length < 16) throw new HttpError(503, 'Admin is disabled: set ADMIN_SECRET (16+ chars) in the server env');
+  if (!s || s.length < 6) throw new HttpError(503, 'Admin is disabled: set ADMIN_SECRET (6+ chars) in the server env');
   return s;
 }
 

@@ -1,6 +1,5 @@
-import { randomUUID } from 'node:crypto';
+import { createVerify, randomUUID } from 'node:crypto';
 import { cert, getApp, getApps, initializeApp, type App } from 'firebase-admin/app';
-import { getAuth } from 'firebase-admin/auth';
 import { getStorage } from 'firebase-admin/storage';
 import { HttpError } from './http.js';
 
@@ -20,15 +19,72 @@ function adminApp(): App {
 
 const bucket = () => getStorage(adminApp()).bucket();
 
+const FIREBASE_CERTS_URL =
+  'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com';
+
+let certCache: { certs: Record<string, string>; expiresAt: number } | undefined;
+
+function firebaseProjectId(): string {
+  const fromEnv = process.env.VITE_FIREBASE_PROJECT_ID || process.env.GCLOUD_PROJECT;
+  if (fromEnv) return fromEnv;
+  const b64 = process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
+  if (!b64) throw new Error('Firebase project id is not set');
+  return JSON.parse(Buffer.from(b64, 'base64').toString('utf8')).project_id as string;
+}
+
+function decodeJwtPart(part: string): unknown {
+  const pad = part.length % 4 === 0 ? '' : '='.repeat(4 - (part.length % 4));
+  return JSON.parse(Buffer.from(part.replace(/-/g, '+').replace(/_/g, '/') + pad, 'base64').toString('utf8'));
+}
+
+async function firebaseCerts(): Promise<Record<string, string>> {
+  if (certCache && certCache.expiresAt > Date.now() + 60_000) return certCache.certs;
+  const res = await fetch(FIREBASE_CERTS_URL);
+  if (!res.ok) throw new Error(`Could not fetch Firebase certs (${res.status})`);
+  const certs = (await res.json()) as Record<string, string>;
+  const maxAge = Number(/max-age=(\d+)/.exec(res.headers.get('cache-control') ?? '')?.[1] ?? 3600);
+  certCache = { certs, expiresAt: Date.now() + maxAge * 1000 };
+  return certs;
+}
+
+/**
+ * Verifies a Firebase ID token and returns the uid.
+ * Done with node:crypto instead of firebase-admin's verifyIdToken: that path
+ * require()s the ESM-only `jose` package and crashes the Vercel function
+ * (ERR_REQUIRE_ESM → FUNCTION_INVOCATION_FAILED).
+ */
+export async function verifyFirebaseIdToken(token: string): Promise<string> {
+  const [encodedHeader, encodedPayload, encodedSig] = token.split('.');
+  if (!encodedHeader || !encodedPayload || !encodedSig) throw new Error('malformed');
+  const header = decodeJwtPart(encodedHeader) as { alg?: string; kid?: string };
+  const payload = decodeJwtPart(encodedPayload) as { aud?: string; iss?: string; sub?: string; exp?: number };
+  const projectId = firebaseProjectId();
+  if (header.alg !== 'RS256' || !header.kid) throw new Error('alg');
+  if (payload.aud !== projectId) throw new Error('aud');
+  if (payload.iss !== `https://securetoken.google.com/${projectId}`) throw new Error('iss');
+  if (typeof payload.exp !== 'number' || payload.exp * 1000 < Date.now() - 5_000) throw new Error('exp');
+  if (!payload.sub) throw new Error('sub');
+  const certPem = (await firebaseCerts())[header.kid];
+  if (!certPem) throw new Error('kid');
+  const verifier = createVerify('RSA-SHA256');
+  verifier.update(`${encodedHeader}.${encodedPayload}`);
+  verifier.end();
+  const sigB64 = encodedSig.replace(/-/g, '+').replace(/_/g, '/');
+  const sigPad = sigB64.length % 4 === 0 ? '' : '='.repeat(4 - (sigB64.length % 4));
+  const sig = Buffer.from(sigB64 + sigPad, 'base64');
+  if (!verifier.verify(certPem, sig)) throw new Error('sig');
+  return payload.sub;
+}
+
 /** Verifies the Firebase ID token sent by the browser and returns the uid. */
 export async function requireUser(req: Request): Promise<string> {
   const header = req.headers.get('authorization') ?? '';
   const token = header.startsWith('Bearer ') ? header.slice(7) : '';
   if (!token) throw new HttpError(401, 'Missing Firebase ID token');
   try {
-    const decoded = await getAuth(adminApp()).verifyIdToken(token);
-    return decoded.uid;
-  } catch {
+    return await verifyFirebaseIdToken(token);
+  } catch (err) {
+    if (err instanceof HttpError) throw err;
     throw new HttpError(401, 'Invalid Firebase ID token');
   }
 }

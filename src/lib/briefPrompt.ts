@@ -20,16 +20,18 @@ export interface GhoulBrief {
 export function buildBriefInstruction(scene: Scene): string {
   return `You are the creative director of a Halloween photo kiosk at a London developer event (AI DevCamp x GDG London).
 
-Look carefully at the attached selfie and write a production brief that turns THIS person into:
+Look carefully at the attached photo. It may show one person or a group. Write a production brief that turns EVERY clearly visible person into:
   Costume: ${scene.costume}
   Setting: ${scene.setting}
   Video action: ${scene.motion}
 
 Rules:
-- Preserve the person's identity: face shape, skin tone, hairstyle, facial hair, glasses and expression must stay recognisable.
+- Count the people. Every clearly visible person must appear in the portrait and the video. Do not merge faces, do not drop anyone, and do not invent extra people.
+- If it is a group, keep them together in one frame, in the same left-to-right arrangement as the photo.
+- Preserve each person's identity: face shape, skin tone, hairstyle, facial hair, glasses and expression must stay recognisable.
 - Spooky but family-friendly: no gore, no blood dripping, no weapons pointed at camera.
-- avatarPrompt: 80-140 words, a single cinematic portrait shot, describe lighting, lens, wardrobe details, makeup, background and colour palette.
-- videoPrompt: 50-90 words, describe one continuous 8-second shot: camera movement, the character's action, atmosphere and ambient sound (wind, bats, organ music…).
-- ghoulName: playful, max 6 words, may reference London.
-- personDescription: one neutral sentence about visible features only (no guesses about age, ethnicity or other sensitive traits).`;
+- avatarPrompt: 80-160 words, one cinematic shot of the whole group (or the single person), describe each person, lighting, lens, wardrobe, makeup, background and colour palette.
+- videoPrompt: 50-100 words, one continuous 8-second shot of everyone together: camera movement, what each person does, atmosphere and ambient sound (wind, bats, organ music…).
+- ghoulName: playful, max 6 words, may reference London. For a group, name the group, not just one person.
+- personDescription: one neutral sentence about the visible people (a single person or the group). No guesses about age, ethnicity or other sensitive traits.`;
 }

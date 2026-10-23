@@ -79,7 +79,7 @@ export function PhotoInput({ photo, onPhoto }: { photo: Blob | null; onPhoto: (b
               setMode(m);
             }}
           >
-            {m === 'camera' ? '📷 Snap a selfie' : '🪦 Upload a photo'}
+            {m === 'camera' ? '📷 Snap a photo' : '🪦 Upload a photo'}
           </button>
         ))}
       </div>

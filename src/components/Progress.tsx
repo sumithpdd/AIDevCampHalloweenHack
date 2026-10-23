@@ -3,7 +3,7 @@ import { MODELS } from '../lib/models';
 import { describeUsage, type UsageStage } from '../lib/usage';
 
 const STAGES: { id: StageId; title: string; model: string; challenge?: number; usage?: UsageStage }[] = [
-  { id: 'upload', title: 'Upload selfie', model: 'Firebase Auth + Storage' },
+  { id: 'upload', title: 'Upload photo', model: 'Firebase Auth + Storage' },
   { id: 'brief', title: 'Write the ghoul brief', model: MODELS.prompt, challenge: 2, usage: 'brief' },
   { id: 'avatar', title: 'Render the avatar', model: `Nano Banana 2 · ${MODELS.image}`, challenge: 3, usage: 'avatar' },
   { id: 'video', title: 'Animate the video', model: MODELS.video, challenge: 4, usage: 'video' },

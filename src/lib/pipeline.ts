@@ -109,7 +109,7 @@ export async function runPipeline(
     set('upload', 'done', `ghouls/${uid.slice(0, 6)}…/${jobId.slice(0, 8)}/selfie.jpg`);
 
     // ── Challenge 2: Gemini 3.8 Flash prompt expansion ────────────────────
-    set('brief', 'running', 'Gemini 3.8 Flash is studying your face (thinking: high)…');
+    set('brief', 'running', 'Gemini 3.8 Flash is studying the photo (thinking: high)…');
     brief = await expandPrompt(selfie, scene);
     const theBrief = brief;
     update((s) => ({ ...s, brief: theBrief }));

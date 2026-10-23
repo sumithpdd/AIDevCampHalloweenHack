@@ -120,8 +120,8 @@ export default function App() {
         <section className="hero">
           <h1>The Haunted Kiosk</h1>
           <p>
-            Snap a selfie. <b>Gemini 3.8 Flash</b> writes your ghoul brief, <b>Nano Banana 2</b> fits the costume, and{' '}
-            <b>Gemini Omni</b> brings you to life.
+            Snap a photo — one person or a group. <b>Gemini 3.8 Flash</b> writes your ghoul brief,{' '}
+            <b>Nano Banana 2</b> fits the costumes, and <b>Gemini Omni</b> brings everyone to life.
           </p>
         </section>
 
@@ -138,7 +138,7 @@ export default function App() {
           {step === 0 && (
             <>
               <h2>
-                <span className="step">1</span> Your face
+                <span className="step">1</span> Your photo
               </h2>
               <PhotoInput photo={photo} onPhoto={setPhoto} />
               <div className="row center cta">

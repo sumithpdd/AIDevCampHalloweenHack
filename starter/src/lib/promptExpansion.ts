@@ -11,7 +11,7 @@ import { recordUsage, type AiLogicUsageMetadata } from './usage';
 const ghoulBriefSchema = Schema.object({
   properties: {
     ghoulName: Schema.string({ description: 'Playful spooky name, max 6 words' }),
-    personDescription: Schema.string({ description: 'One neutral sentence about visible features' }),
+    personDescription: Schema.string({ description: 'One neutral sentence about the visible people, one person or a group' }),
     avatarPrompt: Schema.string({ description: 'Detailed Nano Banana image prompt' }),
     videoPrompt: Schema.string({ description: '8-second cinematic Gemini Omni video direction' }),
   },

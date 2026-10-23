@@ -19,7 +19,9 @@ export async function generateAvatar(
   orientation: Orientation,
 ): Promise<InlineImage> {
   const promptText =
-    `Transform the person in the attached photo into this Halloween character, keeping their face clearly recognisable. ` +
+    `Transform everyone in the attached photo into this Halloween scene, keeping every face clearly recognisable. ` +
+    `If the photo shows a group, include the whole group together in one frame, in the same arrangement. ` +
+    `Do not merge people into one face and do not leave anyone out. ` +
     `${brief.avatarPrompt} Photorealistic cinematic portrait, ${orientation} framing, no text, no watermark.`;
 
   // =====================================================================

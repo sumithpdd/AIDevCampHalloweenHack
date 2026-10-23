@@ -25,7 +25,7 @@ What is safe to be public, and what is not:
 | `VITE_APPCHECK_DEBUG_TOKEN` | ❌ **no** | Localhost only. Never set it on Vercel. Delete it in the console if it leaks. |
 | `GEMINI_API_KEY` | ❌ **no** | Server only, no `VITE_` prefix. |
 | `FIREBASE_SERVICE_ACCOUNT_BASE64` / the JSON file | ❌ **no** | Full admin access to your project. |
-| `ADMIN_SECRET` | ❌ **no** | Password for `/admin`. Server only, 16+ random characters. |
+| `ADMIN_SECRET` | ❌ **no** | Password for `/admin`. Server only, 6+ characters. |
 
 `.gitignore` already excludes `.env.local`, `*service*account*.json`, `.firebaserc` and `.vercel`.
 

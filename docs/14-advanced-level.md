@@ -137,7 +137,7 @@ estimate spend.
 - **Delete.** `DELETE /api/admin/ghouls?uid=…&jobId=…` removes the whole job folder.
 - The page shows totals (ghouls, completed, failed, tokens), a search filter, and a Delete button on each card.
 
-Without `ADMIN_SECRET` (or with one under 16 characters), the admin API answers `503 Admin is disabled`.
+Without `ADMIN_SECRET` (or with one under 6 characters), the admin API answers `503 Admin is disabled`.
 `vercel.json` rewrites `/admin` to the SPA and adds `X-Robots-Tag: noindex`.
 
 ## 9. Delete my photos + `meta.json`
