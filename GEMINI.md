@@ -28,6 +28,7 @@ re-imagining of Google's *Formula E GenMedia* codelab (which used Python/FastAPI
 | `src/lib/branding.ts`, `watermark.ts`, `print.ts` | Event logos on photo + video (canvas/MediaRecorder), postcard print |
 | `src/lib/caption.ts`, `social-posts-storage.ts`, `share.ts` | AI caption + hashtags, saved captions per email (localStorage), sharing |
 | `src/lib/usage.ts` | Token counts per generation |
+| `src/lib/pickup.ts`, `PickupPage.tsx`, `api/pickup.ts` | 6-char pickup code + QR; `/r/CODE` reads ONE card via the function. `codes/` is never readable or listable in Storage |
 | `src/admin/AdminPage.tsx`, `api/admin/*`, `server/adminAuth.ts` | `/admin` (ADMIN_SECRET → signed token; list/delete jobs) |
 | `api/video/start.ts`, `api/video/status.ts` | Vercel Functions (Web `Request`/`Response` handlers) |
 | `vite.config.ts` | Runs `/api/*` locally during `npm run dev` |

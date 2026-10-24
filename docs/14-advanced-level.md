@@ -18,6 +18,7 @@ the repo. This page explains each piece and the one-time setup it needs.
 | 7. Token count per generation | `src/lib/usage.ts`, `TokenSummary.tsx`, `Progress.tsx` | none |
 | 8. Admin area | `src/admin/AdminPage.tsx`, `api/admin/*`, `server/adminAuth.ts` | **`ADMIN_SECRET`** (§8) |
 | 9. Delete my photos + `meta.json` | `src/lib/storage.ts`, `storage.rules` | **redeploy rules** (§9) |
+| 10. Pickup codes + QR (`/r/CODE`) | `src/lib/pickup.ts`, `PickupCard.tsx`, `PickupPage.tsx`, `api/pickup.ts` | **redeploy rules** (§10) |
 
 ## 0. One-time setup checklist
 
@@ -145,6 +146,30 @@ Without `ADMIN_SECRET` (or with one under 6 characters), the admin API answers `
 `storage.rules` now allows each guest's own folder to hold images (≤ 10 MB), `video-branded.mp4|webm` (≤ 60 MB) and
 `meta.json` (≤ 100 KB), and lets the owner delete. **🗑️ Delete my photos** on the result screen removes the selfie,
 portrait, videos and metadata straight away. That's the promise in the consent text of step 3.
+
+## 10. Pickup codes and QR — `/r/CODE`
+
+Every run gets a 6-character code such as `K7P2QX`. The alphabet leaves out `0 O 1 I`, so it can be read aloud at the
+desk. The result screen shows the code and three QR codes (the pickup page, the photo only, the video only). Staff can
+search for the code on `/admin`.
+
+```
+browser   codes/{CODE}.json   ← written by the guest, stamped with metadata.owner = uid
+/r/CODE   GET /api/pickup?code=CODE → Admin SDK reads that ONE card → photo used, portrait, video, caption
+```
+
+**Why the card goes through a function.** If `codes/` were publicly readable in Storage rules, anyone could
+**list** the folder (`?prefix=codes/&delimiter=/`) and collect every guest's photo. So the rules say:
+
+| Action | Who |
+|---|---|
+| read / list | nobody through Storage. Only `/api/pickup` (Admin SDK), and only for a code you already know |
+| create | a signed-in guest, only for a code that doesn't exist yet, with `metadata.owner == their uid` |
+| update / delete | only the owner (the server's `/admin` backfill also stamps the job's uid) |
+
+Reading through the function also means the `/r/` page needs **no bucket CORS**. The card holds token download
+URLs, so the images and video load in `<img>` / `<video>` tags directly. The consent text in step 3 tells guests that
+anyone with their code can see the photo, portrait and video, and **Delete my photos** removes the card too.
 
 ## ✅ Checkpoint
 Run one guest end to end. You should see five stages with token counts, a branded portrait and video, a caption with

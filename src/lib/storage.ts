@@ -1,5 +1,5 @@
-import { deleteObject, getBytes, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { storage } from './firebase';
+import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { auth, storage } from './firebase';
 import type { PickupTicket } from './pickup';
 import { isPickupCode } from './pickup';
 import type { UsageReport } from './usage';
@@ -59,15 +59,26 @@ export async function writeJobMeta(uid: string, meta: JobMeta): Promise<void> {
 /** "Delete my photos" — removes every file of one job (rules allow the owner to delete). */
 export async function writePickupTicket(ticket: PickupTicket): Promise<void> {
   if (!isPickupCode(ticket.code)) throw new Error('Invalid pickup code');
+  const owner = auth.currentUser?.uid;
+  if (!owner) throw new Error('Not signed in');
   const blob = new Blob([JSON.stringify(ticket)], { type: 'application/json' });
-  await uploadBytes(ref(storage, `codes/${ticket.code}.json`), blob, { contentType: 'application/json' });
+  // metadata.owner lets storage.rules allow only this guest to update or delete the card.
+  await uploadBytes(ref(storage, `codes/${ticket.code}.json`), blob, {
+    contentType: 'application/json',
+    customMetadata: { owner },
+  });
 }
 
+/**
+ * Reads one card through the Vercel function (Admin SDK). Storage rules block direct reads so
+ * nobody can list codes/, and this avoids needing bucket CORS for the /r/CODE page.
+ */
 export async function readPickupTicket(code: string): Promise<PickupTicket | null> {
   if (!isPickupCode(code)) return null;
   try {
-    const bytes = await getBytes(ref(storage, `codes/${code}.json`));
-    return JSON.parse(new TextDecoder().decode(bytes)) as PickupTicket;
+    const res = await fetch(`/api/pickup?code=${encodeURIComponent(code)}`, { cache: 'no-store' });
+    if (!res.ok) return null;
+    return (await res.json()) as PickupTicket;
   } catch {
     return null;
   }

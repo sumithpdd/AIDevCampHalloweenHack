@@ -40,8 +40,9 @@ export function DetailsForm({
       <label className="consent">
         <input type="checkbox" checked={consent} onChange={(e) => onConsent(e.target.checked)} />
         <span>
-          I agree that my photo is sent to Google Gemini (via Firebase AI Logic) to create a portrait and video, and stored
-          in Firebase for this event. I can delete it from the result screen at any time.
+          I agree that my photo (and everyone in it agrees) is sent to Google Gemini via Firebase AI Logic to create a
+          portrait and video, and stored in Firebase for this event. Anyone I give my 6-character pickup code or QR to can
+          see the original photo, the portrait and the video. I can delete them all from the result screen at any time.
         </span>
       </label>
     </div>

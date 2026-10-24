@@ -9,7 +9,13 @@ export async function POST(req: Request): Promise<Response> {
   try {
     const { password } = (await req.json().catch(() => ({}))) as { password?: string };
     if (!password) throw new HttpError(400, 'password is required');
-    return json(createAdminToken(password));
+    try {
+      return json(createAdminToken(password));
+    } catch (err) {
+      // Slow down password guessing: every wrong attempt costs ~1.5 s.
+      if (err instanceof HttpError && err.status === 401) await new Promise((r) => setTimeout(r, 1500));
+      throw err;
+    }
   } catch (err) {
     return errorResponse(err);
   }

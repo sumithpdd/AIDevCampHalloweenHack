@@ -232,7 +232,9 @@ async function ensurePickupCode(
       videoUrl,
       updatedAt: new Date().toISOString(),
     };
-    await bucket().file(`codes/${code}.json`).save(JSON.stringify(ticket), { contentType: 'application/json' });
+    await bucket()
+      .file(`codes/${code}.json`)
+      .save(JSON.stringify(ticket), { contentType: 'application/json', metadata: { metadata: { owner: uid } } });
     const next = { ...(meta ?? {}), code, ticketComplete: true, updatedAt: ticket.updatedAt };
     await bucket().file(`ghouls/${uid}/${jobId}/meta.json`).save(JSON.stringify(next), { contentType: 'application/json' });
     return next;
@@ -258,4 +260,14 @@ export async function deleteJobFolder(uid: string, jobId: string): Promise<numbe
   await Promise.all(files.map((f) => f.delete({ ignoreNotFound: true })));
   if (code) await bucket().file(`codes/${code}.json`).delete({ ignoreNotFound: true });
   return files.length;
+}
+
+/** One pickup card for the public /r/CODE page. Returns null when the code has no card. */
+export async function readPickupCard(code: string): Promise<Record<string, unknown> | null> {
+  if (!/^[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{6}$/.test(code)) return null;
+  const file = bucket().file(`codes/${code}.json`);
+  const [exists] = await file.exists();
+  if (!exists) return null;
+  const [bytes] = await file.download();
+  return JSON.parse(bytes.toString('utf8')) as Record<string, unknown>;
 }

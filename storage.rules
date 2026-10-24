@@ -33,16 +33,26 @@ service firebase.storage {
       allow create, update: if isOwner() && (isImage() || isBrandedVideo() || isMeta());
     }
 
-    // Pickup card for one finished run. Anyone with the code can read the photo and video URLs.
-    // Only a signed-in guest can publish a card, and only under a 6-character code.
+    // Pickup card for one run: codes/{CODE}.json.
+    //  • Nobody reads or lists cards through Storage. The /r/CODE page reads one card through
+    //    GET /api/pickup?code=CODE (Admin SDK), so the folder can't be enumerated.
+    //  • A signed-in guest can create a NEW card (never take over an existing code) and stamps it
+    //    with metadata.owner = their uid. Only that guest can update or delete it.
+    //  • Cards written by the server (/admin backfill) carry the job's uid as owner too.
     match /codes/{code} {
-      allow read: if true;
-      allow create, update: if request.auth != null
-        && code.matches('^[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{6}\\.json$')
-        && request.resource.contentType == 'application/json'
-        && request.resource.size < 8 * 1024;
-      allow delete: if request.auth != null
-        && code.matches('^[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{6}\\.json$');
+      function validCode() {
+        return code.matches('^[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{6}\\.json$');
+      }
+      function validCard() {
+        return request.resource.contentType == 'application/json'
+          && request.resource.size < 8 * 1024
+          && request.resource.metadata.owner == request.auth.uid;
+      }
+      allow read: if false;
+      allow create: if request.auth != null && validCode() && resource == null && validCard();
+      allow update: if request.auth != null && validCode()
+        && resource.metadata.owner == request.auth.uid && validCard();
+      allow delete: if request.auth != null && resource.metadata.owner == request.auth.uid;
     }
 
     // Everything else is locked.

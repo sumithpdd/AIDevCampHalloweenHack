@@ -33,6 +33,8 @@
 | `/admin` → 404 on Vercel | SPA rewrite missing | Keep the `rewrites` block in `vercel.json` |
 | Branded video is WebM, not MP4 | Browser's MediaRecorder can't write MP4 (Firefox, older Safari) | Use Chrome/Edge on the kiosk; WebM still plays and shares |
 | Saved captions vanished | They live in this browser only (localStorage) | Use the same device + email; private windows don't keep them |
+| `/r/CODE` says "No ghoul for CODE" but the run finished | Old build read the card with `getBytes()` (needs bucket CORS) or `/api/pickup` isn't deployed | Deploy the current code: `/r/` reads through `GET /api/pickup?code=…` |
+| `storage/unauthorized` publishing `codes/CODE.json` | Rules not redeployed, or the code already belongs to another guest | `npm run firebase:deploy-rules`; a new run gets a fresh code |
 | Works locally, `/api` 404 on Vercel | Files moved out of `/api` | Keep handlers at `api/video/*.ts` |
 | `ERR_MODULE_NOT_FOUND …/server/x.js` on Vercel | Import without `.js` | Server/API imports use `.js` extensions (ESM) — keep them |
 

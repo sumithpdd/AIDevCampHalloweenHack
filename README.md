@@ -124,9 +124,10 @@ You build a light booth in an empty folder with **Claude**, **Gemini**, or **Ant
 
 ### Reference lab (optional)
 
-The files in this repo are a full kiosk with four TODOs, matching the
-[Formula E codelab](https://codelabs.developers.google.com/formula-e-genmedia-lab-codelab).
-Fill them by hand only if you want that exercise. Each AI stage stops with **"Challenge N is still a TODO"** until you do.
+The files in this repo ship **solved**: the kiosk works out of the box. Run `npm run reset-challenges` to swap in
+the four TODO files that match the [Formula E codelab](https://codelabs.developers.google.com/formula-e-genmedia-lab-codelab),
+and `npm run solve -- all` to put the answers back. With the TODOs in, each AI stage stops with
+**"Challenge N is still a TODO"** until you fill it.
 
 | | Doc | Formula E section |
 |---|---|---|
