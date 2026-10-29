@@ -17,7 +17,7 @@ import type { Scene } from './scenes';
  * lab's run_kiosk_pipeline() FastAPI background task, but running in the browser.
  *
  *   upload → brief (C2) → avatar (C3) → video (C4) → logos
- *                  └──── caption (runs in parallel with the video) ────┘
+ *   Captions are on demand from the share panel, not part of every summon.
  */
 export type StageId = 'upload' | 'brief' | 'avatar' | 'video' | 'brand';
 export type StageState = 'idle' | 'running' | 'done' | 'error';
@@ -139,26 +139,13 @@ export async function runPipeline(
     set('upload', 'done', `ghouls/${uid.slice(0, 6)}…/${jobId.slice(0, 8)}/selfie.jpg`);
 
     // ── Challenge 2: Gemini 3.8 Flash prompt expansion ────────────────────
-    set('brief', 'running', 'Gemini 3.8 Flash is studying the photo (thinking: high)…');
+    set('brief', 'running', 'Gemini 3.8 Flash is studying the photo…');
     brief = await expandPrompt(selfie, scene);
     const theBrief = brief;
     update((s) => ({ ...s, brief: theBrief }));
     set('brief', 'done', brief.ghoulName);
 
-    // ✍️ Caption runs in parallel while the slow image + video stages work.
-    update((s) => ({ ...s, captionState: 'running' }));
-    const captionTask = generateCaption({
-      name: guest.firstName,
-      ghoulName: brief.ghoulName,
-      sceneTitle: scene.title,
-      personDescription: brief.personDescription,
-    })
-      .then((c) => {
-        caption = c;
-        update((s) => ({ ...s, caption: c, captionState: 'done' }));
-        if (guest.email) saveSocialPost(guest.email, { caption: c, jobId, ghoulName: theBrief.ghoulName, sceneTitle: scene.title });
-      })
-      .catch(() => update((s) => ({ ...s, captionState: 'error' })));
+    // Caption is on demand from the share panel, so a summon does not spend a fourth Gemini call.
 
     // ── Challenge 3: Nano Banana 2 avatar ─────────────────────────────────
     set('avatar', 'running', 'Nano Banana 2 is stitching your costume…');
@@ -201,7 +188,6 @@ export async function runPipeline(
       set('brand', 'error', `Skipped: ${(err as Error).message}. See docs/14 → storage CORS.`);
     }
 
-    await captionTask;
     await saveMeta({ status: 'completed', ghoulName: brief.ghoulName, caption });
     await publishTicket({ portraitUrl: brandedImageUrl, videoUrl: shareVideoUrl, ghoulName: brief.ghoulName });
   } catch (err) {

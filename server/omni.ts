@@ -9,6 +9,8 @@ import { ChallengeTodo } from './todo.js';
  * official Node SDK (@google/genai) — no Python, no FastAPI.
  */
 export const OMNI_MODEL = process.env.OMNI_MODEL || 'gemini-omni-1.1-flash';
+/** 720p is about $0.10 per second. 360p is the documented low-cost size, about a third of that. */
+const OMNI_RESOLUTION = process.env.OMNI_RESOLUTION || '360p';
 
 let client: GoogleGenAI | undefined;
 function getGenAI(): GoogleGenAI {
@@ -44,6 +46,7 @@ export function buildVideoInstruction(prompt: string): string {
   return (
     `Animate the attached portrait. Do not redesign anyone. ` +
     `One person or a group: keep every person, their faces, bodies, clothing, and arrangement exactly as in the image. ` +
+    `One single continuous shot of about 6 seconds, no cuts to a new scene. No dialogue. ` +
     `Motion comes from the camera, cloth, and background. Faces must not morph, and nobody may appear or disappear. ${prompt} ` +
     `Family-friendly. No on-screen text.`
   );
@@ -63,7 +66,7 @@ export async function startOmniVideo({ prompt, image, aspectRatio }: OmniStartIn
       { type: 'image', data: image.base64, mime_type: image.mimeType },
       { type: 'text', text: buildVideoInstruction(prompt) },
     ],
-    response_format: { type: 'video', aspect_ratio: aspectRatio, resolution: '720p' },
+    response_format: { type: 'video', aspect_ratio: aspectRatio, resolution: OMNI_RESOLUTION },
     background: true,
   });
 

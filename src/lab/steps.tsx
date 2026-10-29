@@ -96,6 +96,11 @@ function Kit() {
           <b>Prepay credits</b> in AI Studio. Blaze pays for Storage. It does not pay for Gemini. A balance of $0
           makes the brief return <code>429</code>. The smallest purchase is $5.
         </li>
+        <li>
+          Expect the money to go to video. On the [Gemini pricing page](https://ai.google.dev/gemini-api/docs/pricing),
+          Omni Flash video output is about <b>$0.10 per second at 720p</b> (5,792 tokens a second). This booth asks
+          for <b>360p</b> and one shot of about 6 seconds. The portrait is about £0.05. The brief is pennies.
+        </li>
         <li>A Vercel account and a GitHub account, for the last step. You do not need them yet.</li>
       </ol>
       <h3>On your laptop</h3>

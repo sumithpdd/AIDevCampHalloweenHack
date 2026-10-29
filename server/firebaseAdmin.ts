@@ -243,6 +243,20 @@ async function ensurePickupCode(
   }
 }
 
+/** Marks a finished video for the admin video wall. Stored on meta.json so any signed-in screen can play it. */
+export async function setJobWall(uid: string, jobId: string, wall: boolean): Promise<void> {
+  const file = bucket().file(`ghouls/${uid}/${jobId}/meta.json`);
+  let meta: Record<string, unknown> = {};
+  try {
+    meta = JSON.parse((await file.download())[0].toString('utf8')) as Record<string, unknown>;
+  } catch {
+    meta = {};
+  }
+  meta.wall = wall;
+  meta.updatedAt = new Date().toISOString();
+  await file.save(JSON.stringify(meta), { contentType: 'application/json' });
+}
+
 /** Deletes every file of one job. */
 export async function deleteJobFolder(uid: string, jobId: string): Promise<number> {
   const prefix = `ghouls/${uid}/${jobId}/`;

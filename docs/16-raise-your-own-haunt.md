@@ -21,6 +21,8 @@ Order of the lab:
 
 Accounts: a Google account, Firebase on **Blaze** (Storage), **Prepay credits** in AI Studio (Blaze does not pay for Gemini), plus Vercel and GitHub for the last step.
 
+Video is the bill. [Gemini Omni Flash](https://ai.google.dev/gemini-api/docs/pricing) is about **$0.10 per second at 720p** (5,792 tokens a second). This booth asks for 360p and one shot of about 6 seconds. The portrait is about £0.05. See [troubleshooting](11-troubleshooting.md#how-much-does-one-guest-cost).
+
 On the laptop: Node 20+, Git, one of Cursor / VS Code / Claude / Gemini / Antigravity, and `firebase-tools` (`firebase login`).
 
 **Checkpoint.** `node -v` is v20 or newer, and both consoles open while you are signed in.

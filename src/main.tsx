@@ -11,7 +11,7 @@ import './index.css';
 const path = window.location.pathname.replace(/\/+$/, '');
 const pickupCode = path.match(/^\/r\/([23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{6})$/)?.[1];
 const page =
-  path === '/admin' ? (
+  path === '/admin' || path === '/admin/wall' ? (
     <AdminPage />
   ) : path === '/build' ? (
     <LabPage />

@@ -2,6 +2,12 @@
 
 > 🎁 **Bonus** — after the core codelab ([11 steps](../README.md#codelab-walkthrough))
 
+## How much does one guest cost?
+
+Almost all of the Gemini spend is the video. Official rates are on the [Gemini API pricing page](https://ai.google.dev/gemini-api/docs/pricing): Omni Flash video output is **$17.50 / 1M tokens**, **5,792 tokens per second of 720p**, about **$0.10 per second**. A portrait is about £0.05 at 1K. The brief is pennies.
+
+The booth asks Omni for **360p** and **one shot of about 6 seconds** (`OMNI_RESOLUTION`, default `360p`; [resolution list](https://ai.google.dev/gemini-api/docs/omni)). Google's pricing page quotes the 720p rate only. Set `OMNI_RESOLUTION=720p` when you want the sharper picture.
+
 | Symptom | Likely cause | Fix |
 |---|---|---|
 | Banner "Firebase isn't configured yet" | `.env.local` missing / dev server not restarted | Fill `VITE_FIREBASE_*`, restart `npm run dev` |

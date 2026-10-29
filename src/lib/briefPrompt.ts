@@ -8,7 +8,7 @@ export interface GhoulBrief {
   personDescription: string;
   /** Detailed prompt for Nano Banana 2 (Challenge 3). */
   avatarPrompt: string;
-  /** Cinematic 8-second direction for Gemini Omni (Challenge 4). */
+  /** Cinematic direction for a clip of about 6 seconds (Challenge 4). */
   videoPrompt: string;
 }
 
@@ -31,7 +31,7 @@ Rules:
 - Change only clothing, small props, background, and lighting. Costume never overrides a face.
 - Spooky but family-friendly: no gore, no blood dripping, no weapons pointed at camera.
 - avatarPrompt: 60-120 words. Describe wardrobe, props, lighting, and background. State that every face must match the photo. Do not describe a new face.
-- videoPrompt: 40-80 words. Camera, cloth, and background may move. Faces must not morph. Everyone who is in the photo stays in frame.
+- videoPrompt: 40-80 words for one continuous shot of about 6 seconds. Camera, cloth, and background may move. Faces must not morph. Everyone who is in the photo stays in frame. No dialogue.
 - ghoulName: playful, max 6 words, may reference London. For a group, name the group, not just one person.
 - personDescription: one neutral sentence about the visible people (a single person or the group). No guesses about age, ethnicity or other sensitive traits.`;
 }

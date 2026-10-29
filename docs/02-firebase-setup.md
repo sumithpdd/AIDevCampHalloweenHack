@@ -93,6 +93,8 @@ FIREBASE_STORAGE_BUCKET=haunted-kiosk-xyz.firebasestorage.app
    ([billing guide](https://ai.google.dev/gemini-api/docs/billing#prepay)). The Firebase **Blaze** plan pays for
    Storage. It does not pay for Gemini. When the Prepay balance hits $0, the brief stage returns
    `429 Your prepayment credits are depleted`. The minimum purchase is $5.
+   Video is what spends it: [Omni Flash](https://ai.google.dev/gemini-api/docs/pricing) is about $0.10 per second at 720p.
+   See [how much one guest costs](11-troubleshooting.md#how-much-does-one-guest-cost).
 3. Add to `.env.local` — **no `VITE_` prefix**, so it never reaches the browser:
 
 ```dotenv

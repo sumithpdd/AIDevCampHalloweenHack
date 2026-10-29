@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { EVENT } from '../lib/branding';
 import { shareLinks } from '../lib/share';
 import { fmt } from '../lib/usage';
+import { VideoWall } from './VideoWall';
 
 interface AdminJob {
   uid: string;
@@ -17,6 +18,7 @@ interface AdminJob {
     usage?: Record<string, { total: number }>;
     status?: string;
     code?: string;
+    wall?: boolean;
     orientation?: string;
     error?: string;
   };
@@ -54,6 +56,7 @@ export function AdminPage() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [filter, setFilter] = useState('');
+  const [view, setView] = useState<'list' | 'wall'>(() => (location.pathname.replace(/\/+$/, '') === '/admin/wall' ? 'wall' : 'list'));
 
   const logout = () => {
     sessionStorage.removeItem(TOKEN_KEY);
@@ -80,6 +83,18 @@ export function AdminPage() {
     void load();
   }, [load]);
 
+  useEffect(() => {
+    const onPop = () => setView(location.pathname.replace(/\/+$/, '') === '/admin/wall' ? 'wall' : 'list');
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  useEffect(() => {
+    if (view !== 'wall') return;
+    const id = window.setInterval(() => void load(), 45 * 60 * 1000);
+    return () => window.clearInterval(id);
+  }, [view, load]);
+
   const login = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -93,6 +108,29 @@ export function AdminPage() {
       setToken(res.token);
     } catch (err) {
       setError((err as Error).message);
+    }
+  };
+
+  const openWall = () => {
+    history.pushState({}, '', '/admin/wall');
+    setView('wall');
+  };
+
+  const closeWall = () => {
+    history.pushState({}, '', '/admin');
+    setView('list');
+  };
+
+  const pin = async (job: AdminJob, wall: boolean) => {
+    setJobs((js) => js?.map((j) => (j.uid === job.uid && j.jobId === job.jobId ? { ...j, meta: { ...j.meta, wall } } : j)) ?? null);
+    try {
+      await api('/api/admin/ghouls', token, {
+        method: 'PATCH',
+        body: JSON.stringify({ uid: job.uid, jobId: job.jobId, wall }),
+      });
+    } catch (e) {
+      setError((e as Error).message);
+      void load();
     }
   };
 
@@ -182,6 +220,9 @@ export function AdminPage() {
             <div className="row spread">
               <input className="search" placeholder="Code, name, scene, caption…" value={filter} onChange={(e) => setFilter(e.target.value)} />
               <div className="row">
+                <button className="btn small" onClick={openWall}>
+                  Video wall
+                </button>
                 <button className="btn small ghost" onClick={() => void load()} disabled={busy}>
                   {busy ? 'Loading…' : '↻ Refresh'}
                 </button>
@@ -225,6 +266,12 @@ export function AdminPage() {
                     ) : null}
                     {j.meta?.caption && <p className="admin-caption">{j.meta.caption}</p>}
                     {j.meta?.error && <p className="error-text small">{j.meta.error}</p>}
+                    {j.urls.video && (
+                      <label className="wall-pick">
+                        <input type="checkbox" checked={!!j.meta?.wall} onChange={(e) => void pin(j, e.target.checked)} />
+                        On the wall
+                      </label>
+                    )}
                     <CreationActions
                       code={j.meta?.code}
                       caption={j.meta?.caption}
@@ -238,6 +285,20 @@ export function AdminPage() {
           </>
         )}
       </main>
+      {token && view === 'wall' && (
+        <VideoWall
+          clips={(jobs ?? [])
+            .filter((j) => j.meta?.wall && j.urls.video)
+            .map((j) => ({
+              key: `${j.uid}/${j.jobId}`,
+              src: j.urls.video as string,
+              poster: j.urls.avatar,
+              title: j.meta?.ghoulName ?? 'Ghoul',
+              code: j.meta?.code,
+            }))}
+          onClose={closeWall}
+        />
+      )}
     </div>
   );
 }

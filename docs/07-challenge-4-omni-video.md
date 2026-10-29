@@ -52,7 +52,7 @@ Hints:
 2. Interactions API fields are **snake_case**: `mime_type`, `response_format`, `aspect_ratio`.
 3. `input` is an array of content blocks: an `image` block (the avatar) and a `text` block
    (`buildVideoInstruction(prompt)`).
-4. `response_format: { type: 'video', aspect_ratio, resolution: '720p' }` and — the important one — `background: true`.
+4. `response_format: { type: 'video', aspect_ratio, resolution: '360p' }` and — the important one — `background: true`. 720p is about $0.10/second ([pricing](https://ai.google.dev/gemini-api/docs/pricing)); 360p is the low-cost size. `OMNI_RESOLUTION` overrides it.
 
 <details>
 <summary>💡 Solution 4a</summary>
@@ -64,7 +64,7 @@ const interaction = await getGenAI().interactions.create({
     { type: 'image', data: image.base64, mime_type: image.mimeType },
     { type: 'text', text: buildVideoInstruction(prompt) },
   ],
-  response_format: { type: 'video', aspect_ratio: aspectRatio, resolution: '720p' },
+  response_format: { type: 'video', aspect_ratio: aspectRatio, resolution: '360p' },
   background: true,
 });
 

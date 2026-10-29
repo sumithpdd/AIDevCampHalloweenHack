@@ -277,6 +277,26 @@ a.btn { text-decoration: none; display: inline-flex; align-items: center; justif
 }
 .admin-thumbs figcaption, .creation-grid figcaption { font-size: 0.72rem; text-align: center; color: var(--muted); margin-top: 0.25rem; }
 .admin-share { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.wall-pick { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: var(--pumpkin-2); }
+.wall {
+  position: fixed; inset: 0; z-index: 30; background: #050308; color: var(--text);
+  display: flex; flex-direction: column;
+}
+.wall-bar {
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  padding: 0.7rem 1rem; background: rgba(0, 0, 0, 0.72); border-bottom: 1px solid #3a1020;
+}
+.wall-grid {
+  flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0.5rem; padding: 0.5rem; min-height: 0;
+}
+.wall-grid figure { margin: 0; position: relative; height: 100%; min-height: 42vh; background: #000; border-radius: 12px; overflow: hidden; }
+.wall-grid video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.wall-grid figcaption {
+  position: absolute; left: 0; right: 0; bottom: 0; padding: 0.45rem 0.6rem;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.75)); font-size: 0.85rem;
+}
+.wall-empty { margin: auto; color: var(--muted); padding: 2rem; text-align: center; }
 .creation-grid { margin: 0.5rem 0 1rem; }
 .card .share-grid { margin-top: 0.8rem; }
 .admin-media .dim { opacity: 0.5; }

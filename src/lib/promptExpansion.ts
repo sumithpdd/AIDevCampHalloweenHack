@@ -13,7 +13,7 @@ const ghoulBriefSchema = Schema.object({
     ghoulName: Schema.string({ description: 'Playful spooky name, max 6 words' }),
     personDescription: Schema.string({ description: 'One neutral sentence about the visible people, one person or a group' }),
     avatarPrompt: Schema.string({ description: 'Detailed Nano Banana image prompt' }),
-    videoPrompt: Schema.string({ description: '8-second cinematic Gemini Omni video direction' }),
+    videoPrompt: Schema.string({ description: 'About 6 seconds, one continuous shot, cinematic Gemini Omni direction' }),
   },
 });
 
@@ -29,7 +29,7 @@ export async function expandPrompt(selfie: InlineImage, scene: Scene): Promise<G
     model: MODELS.prompt,
     generationConfig: {
       temperature: 0.2,
-      thinkingConfig: { thinkingLevel: ThinkingLevel.HIGH },
+      thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL },
       responseMimeType: 'application/json',
       responseSchema: ghoulBriefSchema,
     },
