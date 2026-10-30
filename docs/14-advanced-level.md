@@ -76,10 +76,7 @@ and your exact Vercel domain (GCS does **not** support `*.vercel.app` wildcards)
 
 ## 3. Printing postcards
 
-`printPortrait()` opens the branded portrait in a hidden iframe with `@page { size: 100mm 148mm; margin: 0 }`
-(148 × 100 mm for landscape) and calls `print()`. That's the Canon SELPHY / photo-kiosk postcard size. In the
-print dialog choose **borderless** and **100 %** scale. For a hands-off kiosk, run Chrome with `--kiosk-printing`
-so it prints to the default printer without the dialog.
+`printPortrait()` lays the branded portrait out at **100 × 148 mm** (148 × 100 mm for a landscape photo) and calls `print()`. That is the Canon SELPHY CP1300 cassette with **RP-108** postcard paper (4×6 / 4R). The page margin is 0 and the photo covers the card. In the print dialog choose this printer, paper **Postcard 100×148 mm**, **borderless**, and **100 %** scale. For a hands-off kiosk, run Chrome with `--kiosk-printing` so it prints to the default printer without the dialog.
 
 ## 4. AI caption with event hashtags
 

@@ -106,7 +106,7 @@ export function SharePanel({
         )}
         {imageUrl && (
           <button className="btn ghost" onClick={() => printPortrait(imageUrl, orientation)}>
-            🖨️ Print postcard
+            🖨️ Print 100×148
           </button>
         )}
       </div>
