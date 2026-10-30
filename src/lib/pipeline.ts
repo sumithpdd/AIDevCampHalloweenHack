@@ -11,6 +11,7 @@ import { onUsage, recordInteractionUsage, totalTokens, type UsageReport } from '
 import { findPostForJob, saveSocialPost } from './social-posts-storage';
 import type { GhoulBrief } from './briefPrompt';
 import type { Scene } from './scenes';
+import { SKELETON_LETTERING, isSkeletonScene } from '../data/skeleton';
 
 /**
  * The whole kiosk pipeline — the React/Firebase version of the Formula E
@@ -149,7 +150,12 @@ export async function runPipeline(
 
     // ── Challenge 3: Nano Banana 2 avatar ─────────────────────────────────
     set('avatar', 'running', 'Nano Banana 2 is stitching your costume…');
-    const avatar = await generateAvatar(brief, selfie, orientation);
+    const avatar = await generateAvatar(
+      brief,
+      selfie,
+      orientation,
+      isSkeletonScene(scene) ? SKELETON_LETTERING : undefined,
+    );
     const avatarDataUrl = toDataUrl(avatar);
     update((s) => ({ ...s, avatarDataUrl }));
     await uploadToStorage(ghoulPath(uid, jobId, 'avatar.png'), inlineImageToBlob(avatar));
