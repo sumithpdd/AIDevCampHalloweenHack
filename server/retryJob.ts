@@ -12,7 +12,26 @@ export interface RetryResult {
   status: 'running' | 'completed' | 'failed';
   stage: 'brief' | 'avatar' | 'video' | 'done';
   ghoulName?: string;
+  personDescription?: string;
+  avatarPrompt?: string;
+  videoPrompt?: string;
+  portraitUrl?: string;
+  videoUrl?: string;
   error?: string;
+}
+
+function pack(status: RetryResult['status'], stage: RetryResult['stage'], brief?: GhoulBrief, extra: Partial<RetryResult> = {}): RetryResult {
+  return {
+    status,
+    stage,
+    ghoulName: extra.ghoulName ?? brief?.ghoulName,
+    personDescription: brief?.personDescription,
+    avatarPrompt: brief?.avatarPrompt,
+    videoPrompt: brief?.videoPrompt,
+    portraitUrl: extra.portraitUrl,
+    videoUrl: extra.videoUrl,
+    error: extra.error,
+  };
 }
 
 let client: GoogleGenAI | undefined;
@@ -131,11 +150,13 @@ export async function retryJob(uid: string, jobId: string): Promise<RetryResult>
     const now = () => new Date().toISOString();
     const nameOf = (brief?: GhoulBrief) => brief?.ghoulName ?? (typeof meta.ghoulName === 'string' ? meta.ghoulName : undefined);
 
-    if (await existingDownloadUrl(videoPath)) {
+    const videoReady = await existingDownloadUrl(videoPath);
+    if (videoReady) {
+      const portraitUrl = (await existingDownloadUrl(avatarPath)) ?? undefined;
       meta = { ...meta, status: 'completed', updatedAt: now() };
       delete meta.error;
       await writeMeta(uid, jobId, meta);
-      return { status: 'completed', stage: 'done', ghoulName: nameOf() };
+      return pack('completed', 'done', isBrief(meta.brief) ? meta.brief : undefined, { portraitUrl, videoUrl: videoReady, ghoulName: nameOf() });
     }
 
     let brief = isBrief(meta.brief) ? meta.brief : undefined;
@@ -146,7 +167,7 @@ export async function retryJob(uid: string, jobId: string): Promise<RetryResult>
       meta = { ...meta, brief, ghoulName: brief.ghoulName, status: 'running', updatedAt: now() };
       delete meta.error;
       await writeMeta(uid, jobId, meta);
-      return { status: 'running', stage: 'brief', ghoulName: brief.ghoulName };
+      return pack('running', 'brief', brief);
     }
 
     if (!(await existingDownloadUrl(avatarPath))) {
@@ -154,11 +175,11 @@ export async function retryJob(uid: string, jobId: string): Promise<RetryResult>
       const selfie = await downloadFile(ghoulPath(uid, jobId, 'selfie.jpg'));
       const orientation = meta.orientation === '16:9' ? '16:9' : '9:16';
       const portrait = await makePortrait(selfie, brief, orientation);
-      await saveFile(avatarPath, portrait.bytes, portrait.mimeType);
+      const portraitUrl = await saveFile(avatarPath, portrait.bytes, portrait.mimeType);
       meta = { ...meta, ghoulName: brief.ghoulName, status: 'running', updatedAt: now() };
       delete meta.error;
       await writeMeta(uid, jobId, meta);
-      return { status: 'running', stage: 'avatar', ghoulName: brief.ghoulName };
+      return pack('running', 'avatar', brief, { portraitUrl });
     }
 
     stage = 'video';
@@ -174,24 +195,26 @@ export async function retryJob(uid: string, jobId: string): Promise<RetryResult>
       meta = { ...meta, interactionId, ghoulName: brief.ghoulName, status: 'running', updatedAt: now() };
       delete meta.error;
       await writeMeta(uid, jobId, meta);
-      return { status: 'running', stage: 'video', ghoulName: brief.ghoulName };
+      const portraitUrl = (await existingDownloadUrl(avatarPath)) ?? undefined;
+      return pack('running', 'video', brief, { portraitUrl });
     }
 
     const result = await checkOmniVideo(interactionId);
-    if (result.status === 'in_progress') return { status: 'running', stage: 'video', ghoulName: nameOf(brief) };
+    const portraitUrl = (await existingDownloadUrl(avatarPath)) ?? undefined;
+    if (result.status === 'in_progress') return pack('running', 'video', brief, { portraitUrl, ghoulName: nameOf(brief) });
     if (result.status === 'failed') {
       const { interactionId: _drop, ...rest } = meta;
       void _drop;
       meta = { ...rest, status: 'failed', error: result.error.slice(0, 500), updatedAt: now() };
       await writeMeta(uid, jobId, meta);
-      return { status: 'failed', stage: 'video', error: result.error, ghoulName: nameOf(brief) };
+      return pack('failed', 'video', brief, { portraitUrl, error: result.error, ghoulName: nameOf(brief) });
     }
 
-    await saveFile(videoPath, result.video.bytes, result.video.mimeType);
+    const videoUrl = await saveFile(videoPath, result.video.bytes, result.video.mimeType);
     meta = { ...meta, ghoulName: brief.ghoulName, status: 'completed', updatedAt: now() };
     delete meta.error;
     await writeMeta(uid, jobId, meta);
-    return { status: 'completed', stage: 'done', ghoulName: brief.ghoulName };
+    return pack('completed', 'done', brief, { portraitUrl, videoUrl });
   } catch (err) {
     const message = (err instanceof Error ? err.message : 'Retry failed').slice(0, 500);
     meta = { ...meta, status: 'failed', error: message, updatedAt: new Date().toISOString() };

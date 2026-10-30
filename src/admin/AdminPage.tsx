@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { EVENT } from '../lib/branding';
 import { shareLinks } from '../lib/share';
 import { fmt } from '../lib/usage';
+import { freshStages, markStage, RetryScreen, type RetryView } from './RetryScreen';
 import { VideoWall } from './VideoWall';
 
 interface AdminJob {
@@ -57,7 +58,8 @@ export function AdminPage() {
   const [busy, setBusy] = useState(false);
   const [filter, setFilter] = useState('');
   const [view, setView] = useState<'list' | 'wall'>(() => (location.pathname.replace(/\/+$/, '') === '/admin/wall' ? 'wall' : 'list'));
-  const [retrying, setRetrying] = useState<{ key: string; label: string } | null>(null);
+  const [retrying, setRetrying] = useState(false);
+  const [retryView, setRetryView] = useState<RetryView | null>(null);
 
   const logout = () => {
     sessionStorage.removeItem(TOKEN_KEY);
@@ -136,35 +138,125 @@ export function AdminPage() {
   };
 
   const retry = async (job: AdminJob) => {
-    const key = `${job.uid}/${job.jobId}`;
-    const label: Record<string, string> = {
-      brief: 'Writing the name…',
-      avatar: 'Making the portrait…',
-      video: 'Animating…',
-      done: 'Finishing…',
-    };
-    setRetrying({ key, label: 'Retrying…' });
+    setRetrying(true);
     setError('');
+    setJobs((js) =>
+      js?.map((j) =>
+        j.uid === job.uid && j.jobId === job.jobId ? { ...j, meta: { ...j.meta, status: 'running', error: undefined } } : j,
+      ) ?? null,
+    );
+    let stages = freshStages();
+    let brief: RetryView['brief'];
+    let alive = true;
+    const close = () => {
+      alive = false;
+      setRetryView(null);
+    };
+    const base: RetryView = {
+      code: job.meta?.code,
+      sceneTitle: job.meta?.sceneTitle,
+      firstName: job.meta?.firstName,
+      selfieUrl: job.urls.selfie,
+      stages,
+      running: true,
+      onClose: close,
+    };
+    setRetryView(base);
+    const show = (patch: Partial<RetryView>) => {
+      if (!alive) return;
+      setRetryView((current) => {
+        const next = { ...base, ...current, ...patch, onClose: close };
+        if (next.stages.video.state === 'running' && !next.videoStartedAt) next.videoStartedAt = Date.now();
+        return next;
+      });
+    };
     try {
       for (let i = 0; i < 40; i++) {
-        const res = await api<{ status: string; stage: string; error?: string; ghoulName?: string }>('/api/admin/retry', token, {
+        const res = await api<{
+          status: string;
+          stage: string;
+          error?: string;
+          ghoulName?: string;
+          personDescription?: string;
+          avatarPrompt?: string;
+          videoPrompt?: string;
+          portraitUrl?: string;
+          videoUrl?: string;
+        }>('/api/admin/retry', token, {
           method: 'POST',
           body: JSON.stringify({ uid: job.uid, jobId: job.jobId }),
         });
-        if (res.ghoulName) {
-          setJobs((js) => js?.map((j) => (j.uid === job.uid && j.jobId === job.jobId ? { ...j, meta: { ...j.meta, ghoulName: res.ghoulName } } : j)) ?? null);
+        if (!alive) return;
+        if (res.ghoulName && res.avatarPrompt && res.videoPrompt) {
+          brief = {
+            ghoulName: res.ghoulName,
+            personDescription: res.personDescription ?? '',
+            avatarPrompt: res.avatarPrompt,
+            videoPrompt: res.videoPrompt,
+          };
         }
-        if (res.status === 'failed') throw new Error(res.error || 'Retry failed');
-        if (res.status === 'completed') break;
-        setRetrying({ key, label: label[res.stage] ?? 'Retrying…' });
+        if (res.status === 'failed') {
+          const failed = (res.stage === 'avatar' || res.stage === 'video' || res.stage === 'brief' ? res.stage : 'brief') as
+            | 'brief'
+            | 'avatar'
+            | 'video';
+          stages = markStage(stages, failed, 'error', res.error || 'Retry failed');
+          show({
+            stages,
+            brief,
+            ...(res.portraitUrl ? { portraitUrl: res.portraitUrl } : {}),
+            ...(res.videoUrl ? { videoUrl: res.videoUrl } : {}),
+            error: res.error || 'Retry failed',
+            running: false,
+          });
+          break;
+        }
+        if (res.status === 'completed' || res.stage === 'done') {
+          stages = markStage(stages, 'brief', 'done', brief?.ghoulName);
+          stages = markStage(stages, 'avatar', 'done', 'Saved the portrait');
+          stages = markStage(stages, 'video', 'done', 'Saved video.mp4');
+          stages = markStage(stages, 'brand', 'done', 'Portrait and video saved');
+          show({
+            stages,
+            brief,
+            ...(res.portraitUrl ? { portraitUrl: res.portraitUrl } : {}),
+            ...(res.videoUrl ? { videoUrl: res.videoUrl } : {}),
+            running: false,
+          });
+          break;
+        }
+        if (res.stage === 'brief') {
+          stages = markStage(stages, 'brief', 'done', res.ghoulName);
+          stages = markStage(stages, 'avatar', 'running', 'Nano Banana 2 is stitching the costume…');
+        } else if (res.stage === 'avatar') {
+          stages = markStage(stages, 'brief', 'done', res.ghoulName ?? brief?.ghoulName);
+          stages = markStage(stages, 'avatar', 'done', 'Saved the portrait');
+          stages = markStage(stages, 'video', 'running', 'Waking Gemini Omni in the crypt…');
+        } else if (res.stage === 'video') {
+          stages = markStage(stages, 'brief', 'done', res.ghoulName ?? brief?.ghoulName);
+          stages = markStage(stages, 'avatar', 'done', 'Saved the portrait');
+          stages = markStage(stages, 'video', 'running', 'Gemini Omni is animating your ghoul…');
+        }
+        show({
+          stages,
+          brief,
+          ...(res.portraitUrl ? { portraitUrl: res.portraitUrl } : {}),
+          ...(res.videoUrl ? { videoUrl: res.videoUrl } : {}),
+          running: true,
+        });
         await new Promise((r) => setTimeout(r, res.stage === 'video' ? 5000 : 400));
       }
-      await load();
+      if (alive && stages.video.state === 'running') {
+        show({ stages, running: false, error: 'Still rendering. Press Retry again to keep watching.' });
+      }
     } catch (e) {
-      setError((e as Error).message);
-      await load();
+      const message = (e as Error).message;
+      const failed = (['video', 'avatar', 'brief'] as const).find((id) => stages[id].state === 'running') ?? 'brief';
+      stages = markStage(stages, failed, 'error', message);
+      show({ stages, error: message, running: false });
     } finally {
-      setRetrying(null);
+      setRetrying(false);
+      await load().catch(() => undefined);
     }
   };
 
@@ -307,13 +399,8 @@ export function AdminPage() {
                       </label>
                     )}
                     {j.urls.selfie && !j.urls.video && (
-                      <button
-                        type="button"
-                        className="btn small"
-                        disabled={!!retrying}
-                        onClick={() => void retry(j)}
-                      >
-                        {retrying?.key === `${j.uid}/${j.jobId}` ? retrying.label : 'Retry'}
+                      <button type="button" className="btn small" disabled={retrying} onClick={() => void retry(j)}>
+                        {retrying ? 'Retrying…' : 'Retry'}
                       </button>
                     )}
                     <CreationActions
@@ -329,6 +416,7 @@ export function AdminPage() {
           </>
         )}
       </main>
+      {retryView && <RetryScreen run={retryView} />}
       {token && view === 'wall' && (
         <VideoWall
           clips={(jobs ?? [])

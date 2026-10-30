@@ -297,6 +297,8 @@ a.btn { text-decoration: none; display: inline-flex; align-items: center; justif
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.75)); font-size: 0.85rem;
 }
 .wall-empty { margin: auto; color: var(--muted); padding: 2rem; text-align: center; }
+.retry-screen { flex: 1; overflow: auto; padding: 1rem 1rem 2rem; }
+.retry-screen .card { max-width: 860px; margin: 0 auto; }
 .creation-grid { margin: 0.5rem 0 1rem; }
 .card .share-grid { margin-top: 0.8rem; }
 .admin-media .dim { opacity: 0.5; }
