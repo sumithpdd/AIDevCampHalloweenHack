@@ -251,6 +251,22 @@ a.btn { text-decoration: none; display: inline-flex; align-items: center; justif
 .share { margin-top: 1.5rem; border-top: 1px solid var(--line); padding-top: 1rem; display: grid; gap: 0.8rem; }
 .share h3 { margin: 0; }
 .share-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.5rem; }
+.share-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
+.haunt-share { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+.haunt-icon {
+  width: 42px; height: 42px; padding: 0; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer;
+  color: var(--pumpkin-2); text-decoration: none;
+  border: 1px solid var(--pumpkin);
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255, 122, 26, 0.35), transparent 55%),
+    radial-gradient(circle at 50% 120%, rgba(255, 77, 109, 0.45), transparent 50%),
+    #140910;
+  box-shadow: 0 0 0 1px rgba(90, 10, 20, 0.8), 0 0 12px rgba(255, 122, 26, 0.28);
+}
+.haunt-icon svg { width: 20px; height: 20px; display: block; }
+.haunt-icon:hover { color: #fff; border-color: var(--blood); box-shadow: 0 0 16px rgba(255, 77, 109, 0.55); }
+button.haunt-icon { font: inherit; }
 .saved ul { list-style: none; padding: 0; margin: 0.75rem 0; display: grid; gap: 0.6rem; }
 .saved li { display: flex; line-height: 1.45; justify-content: space-between; gap: 0.75rem; align-items: center; border-bottom: 1px solid var(--line); padding-bottom: 0.6rem; }
 .saved-title { font-weight: 600; }

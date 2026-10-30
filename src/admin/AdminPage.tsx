@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { EVENT } from '../lib/branding';
 import { shareLinks } from '../lib/share';
+import { ShareMarks } from '../components/ShareMarks';
+import type { Orientation } from '../lib/avatar';
 import { fmt } from '../lib/usage';
 import { freshStages, markStage, RetryScreen, type RetryView } from './RetryScreen';
 import { VideoWall } from './VideoWall';
@@ -407,6 +409,8 @@ export function AdminPage() {
                       code={j.meta?.code}
                       caption={j.meta?.caption}
                       name={j.meta?.ghoulName}
+                      printUrl={j.urls.avatar}
+                      orientation={j.meta?.orientation === '16:9' ? '16:9' : '9:16'}
                       onDelete={() => void remove(j)}
                     />
                   </div>
@@ -450,11 +454,15 @@ function CreationActions({
   code,
   caption,
   name,
+  printUrl,
+  orientation,
   onDelete,
 }: {
   code?: string;
   caption?: string;
   name?: string;
+  printUrl?: string;
+  orientation: Orientation;
   onDelete: () => void;
 }) {
   const [copied, setCopied] = useState<'code' | 'link' | ''>('');
@@ -481,20 +489,10 @@ function CreationActions({
           <a className="btn small ghost" href={`/r/${code}`} target="_blank" rel="noreferrer">
             Open
           </a>
-          {links && (
-            <>
-              <a className="btn small ghost" href={links.whatsapp} target="_blank" rel="noreferrer">
-                WhatsApp
-              </a>
-              <a className="btn small ghost" href={links.x} target="_blank" rel="noreferrer">
-                X
-              </a>
-              <a className="btn small ghost" href={links.linkedin} target="_blank" rel="noreferrer">
-                LinkedIn
-              </a>
-            </>
-          )}
         </>
+      )}
+      {(links || printUrl) && (
+        <ShareMarks links={links ?? shareLinks(blurb)} printUrl={printUrl} orientation={orientation} />
       )}
       <button type="button" className="btn small ghost danger" onClick={onDelete}>
         Delete

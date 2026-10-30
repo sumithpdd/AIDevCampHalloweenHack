@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { EVENT } from '../lib/branding';
 import { isPickupCode, pickupUrl, type PickupTicket } from '../lib/pickup';
 import { shareLinks } from '../lib/share';
+import { ShareMarks } from './ShareMarks';
 import { readPickupTicket } from '../lib/storage';
 
 /** Public page at /r/CODE. One scan lands on the photo and the video for that run. */
@@ -72,25 +73,14 @@ function Creation({ ticket, code }: { ticket: PickupTicket; code: string }) {
         <Media label="Video" href={ticket.videoUrl} kind="video" />
       </div>
       {ticket.caption && <p className="admin-caption">{ticket.caption}</p>}
-      <div className="share-grid">
+      <div className="share-row">
         <button type="button" className="btn small ghost" onClick={() => void copy(code, 'code')}>
           {copied === 'code' ? 'Copied' : 'Copy code'}
         </button>
         <button type="button" className="btn small ghost" onClick={() => void copy(page, 'link')}>
           {copied === 'link' ? 'Copied' : 'Copy link'}
         </button>
-        <a className="btn small ghost" href={links.whatsapp} target="_blank" rel="noreferrer">
-          WhatsApp
-        </a>
-        <a className="btn small ghost" href={links.x} target="_blank" rel="noreferrer">
-          X
-        </a>
-        <a className="btn small ghost" href={links.linkedin} target="_blank" rel="noreferrer">
-          LinkedIn
-        </a>
-        <a className="btn small ghost" href={links.bluesky} target="_blank" rel="noreferrer">
-          Bluesky
-        </a>
+        <ShareMarks links={links} printUrl={portrait} />
       </div>
     </div>
   );

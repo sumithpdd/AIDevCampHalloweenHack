@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { downloadBlob, nativeShare, shareLinks } from '../lib/share';
-import { printPortrait } from '../lib/print';
+import { ShareMarks } from './ShareMarks';
 import type { Orientation } from '../lib/avatar';
 
 export function SharePanel({
@@ -58,28 +58,17 @@ export function SharePanel({
         </button>
       </div>
 
-      <div className="share-grid">
+      <div className="share-row">
         <button
           className="btn"
           onClick={async () => {
             const ok = await nativeShare({ caption, imageBlob, videoBlob, imageUrl, videoUrl: pageUrl ?? videoUrl });
-            setShareMsg(ok ? '' : 'Sharing isn’t supported here — use the links below.');
+            setShareMsg(ok ? '' : 'Sharing isn’t supported here — use the seals below.');
           }}
         >
           📲 Share…
         </button>
-        <a className="btn ghost" href={links.linkedin} target="_blank" rel="noreferrer" onClick={() => void copy()}>
-          LinkedIn
-        </a>
-        <a className="btn ghost" href={links.x} target="_blank" rel="noreferrer">
-          X
-        </a>
-        <a className="btn ghost" href={links.bluesky} target="_blank" rel="noreferrer">
-          Bluesky
-        </a>
-        <a className="btn ghost" href={links.whatsapp} target="_blank" rel="noreferrer">
-          WhatsApp
-        </a>
+        <ShareMarks links={links} printUrl={imageUrl} orientation={orientation} />
       </div>
       {shareMsg && <p className="muted">{shareMsg}</p>}
       <p className="muted small">
@@ -103,11 +92,6 @@ export function SharePanel({
               ⬇️ Video
             </a>
           )
-        )}
-        {imageUrl && (
-          <button className="btn ghost" onClick={() => printPortrait(imageUrl, orientation)}>
-            🖨️ Print 100×148
-          </button>
         )}
       </div>
     </section>
