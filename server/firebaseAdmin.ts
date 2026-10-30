@@ -213,7 +213,9 @@ async function ensurePickupCode(
   if (!files.avatarFile && !files.videoFile) return meta;
   const current = typeof meta?.code === 'string' ? meta.code : '';
   const valid = /^[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{6}$/.test(current);
-  if (valid && meta?.ticketComplete === true) return meta;
+  // A retry can add the video after an earlier list already published the portrait.
+  const lateVideo = !!files.videoFile && meta?.videoAttached !== true;
+  if (valid && meta?.ticketComplete === true && !lateVideo) return meta;
   try {
     const code = valid ? current : makePickupCode();
     const [sourceUrl, portraitUrl, videoUrl] = await Promise.all([
@@ -235,7 +237,13 @@ async function ensurePickupCode(
     await bucket()
       .file(`codes/${code}.json`)
       .save(JSON.stringify(ticket), { contentType: 'application/json', metadata: { metadata: { owner: uid } } });
-    const next = { ...(meta ?? {}), code, ticketComplete: true, updatedAt: ticket.updatedAt };
+    const next = {
+      ...(meta ?? {}),
+      code,
+      ticketComplete: true,
+      ...(files.videoFile ? { videoAttached: true } : {}),
+      updatedAt: ticket.updatedAt,
+    };
     await bucket().file(`ghouls/${uid}/${jobId}/meta.json`).save(JSON.stringify(next), { contentType: 'application/json' });
     return next;
   } catch {

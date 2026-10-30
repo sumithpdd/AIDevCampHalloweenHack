@@ -57,6 +57,7 @@ export function AdminPage() {
   const [busy, setBusy] = useState(false);
   const [filter, setFilter] = useState('');
   const [view, setView] = useState<'list' | 'wall'>(() => (location.pathname.replace(/\/+$/, '') === '/admin/wall' ? 'wall' : 'list'));
+  const [retrying, setRetrying] = useState<{ key: string; label: string } | null>(null);
 
   const logout = () => {
     sessionStorage.removeItem(TOKEN_KEY);
@@ -131,6 +132,39 @@ export function AdminPage() {
     } catch (e) {
       setError((e as Error).message);
       void load();
+    }
+  };
+
+  const retry = async (job: AdminJob) => {
+    const key = `${job.uid}/${job.jobId}`;
+    const label: Record<string, string> = {
+      brief: 'Writing the name…',
+      avatar: 'Making the portrait…',
+      video: 'Animating…',
+      done: 'Finishing…',
+    };
+    setRetrying({ key, label: 'Retrying…' });
+    setError('');
+    try {
+      for (let i = 0; i < 40; i++) {
+        const res = await api<{ status: string; stage: string; error?: string; ghoulName?: string }>('/api/admin/retry', token, {
+          method: 'POST',
+          body: JSON.stringify({ uid: job.uid, jobId: job.jobId }),
+        });
+        if (res.ghoulName) {
+          setJobs((js) => js?.map((j) => (j.uid === job.uid && j.jobId === job.jobId ? { ...j, meta: { ...j.meta, ghoulName: res.ghoulName } } : j)) ?? null);
+        }
+        if (res.status === 'failed') throw new Error(res.error || 'Retry failed');
+        if (res.status === 'completed') break;
+        setRetrying({ key, label: label[res.stage] ?? 'Retrying…' });
+        await new Promise((r) => setTimeout(r, res.stage === 'video' ? 5000 : 400));
+      }
+      await load();
+    } catch (e) {
+      setError((e as Error).message);
+      await load();
+    } finally {
+      setRetrying(null);
     }
   };
 
@@ -242,7 +276,7 @@ export function AdminPage() {
                     <Thumb label="Video" src={j.urls.video} video />
                   </div>
                   <div className="admin-body">
-                    <div className="admin-name">{j.meta?.ghoulName ?? 'Unnamed ghoul'}</div>
+                    <div className="admin-name">{j.meta?.ghoulName ?? j.meta?.sceneTitle ?? 'Unnamed ghoul'}</div>
                     <div className="pickup-code small">{j.meta?.code ?? 'No code yet'}</div>
                     <div className="muted small">
                       {j.meta?.sceneTitle ?? '—'} {j.meta?.firstName ? `· ${j.meta.firstName}` : ''}
@@ -271,6 +305,16 @@ export function AdminPage() {
                         <input type="checkbox" checked={!!j.meta?.wall} onChange={(e) => void pin(j, e.target.checked)} />
                         On the wall
                       </label>
+                    )}
+                    {j.urls.selfie && !j.urls.video && (
+                      <button
+                        type="button"
+                        className="btn small"
+                        disabled={!!retrying}
+                        onClick={() => void retry(j)}
+                      >
+                        {retrying?.key === `${j.uid}/${j.jobId}` ? retrying.label : 'Retry'}
+                      </button>
                     )}
                     <CreationActions
                       code={j.meta?.code}

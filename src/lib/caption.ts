@@ -26,7 +26,7 @@ export function ensureHashtags(caption: string): string {
 export async function generateCaption(input: CaptionInput): Promise<string> {
   const model = getGenerativeModel(getHalloweenAI(), {
     model: MODELS.prompt,
-    generationConfig: { temperature: 0.9, thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL } },
+    generationConfig: { temperature: 0.9, thinkingConfig: { thinkingLevel: ThinkingLevel.LOW } },
   });
 
   const prompt = `Write a short, fun social media post (max 60 words + hashtags) for a guest of ${EVENT.name} (${EVENT.edition}).

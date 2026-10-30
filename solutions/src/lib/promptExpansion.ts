@@ -29,7 +29,7 @@ export async function expandPrompt(selfie: InlineImage, scene: Scene): Promise<G
     model: MODELS.prompt,
     generationConfig: {
       temperature: 0.2,
-      thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL },
+      thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
       responseMimeType: 'application/json',
       responseSchema: ghoulBriefSchema,
     },
