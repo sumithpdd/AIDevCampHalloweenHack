@@ -3,8 +3,8 @@
  * This keeps the kiosk to a short 4-step flow: You → Scene → Details → Result.
  * Guests who want more control can "Mix your own" (any backdrop × any character).
  */
-import { BACKGROUNDS, getBackgroundById } from './backgrounds';
-import { PROMPTS, getPromptById } from './prompts';
+import { BACKGROUNDS, getBackgroundById } from './backgrounds.js';
+import { PROMPTS, getPromptById } from './prompts.js';
 import type { Scene } from '../lib/scenes';
 
 export interface BoothScene {

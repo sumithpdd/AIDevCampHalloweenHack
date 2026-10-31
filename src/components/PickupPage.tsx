@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { EVENT } from '../lib/branding';
 import { isPickupCode, pickupUrl, type PickupTicket } from '../lib/pickup';
 import { shareLinks } from '../lib/share';
+import { printPortrait } from '../lib/print';
 import { ShareMarks } from './ShareMarks';
 import { readPickupTicket } from '../lib/storage';
 
@@ -73,6 +74,11 @@ function Creation({ ticket, code }: { ticket: PickupTicket; code: string }) {
         <Media label="Video" href={ticket.videoUrl} kind="video" />
       </div>
       {ticket.caption && <p className="admin-caption">{ticket.caption}</p>}
+      {portrait && (
+        <button type="button" className="btn" onClick={() => printPortrait(portrait, '9:16')}>
+          Print postcard
+        </button>
+      )}
       <div className="share-row">
         <button type="button" className="btn small ghost" onClick={() => void copy(code, 'code')}>
           {copied === 'code' ? 'Copied' : 'Copy code'}
